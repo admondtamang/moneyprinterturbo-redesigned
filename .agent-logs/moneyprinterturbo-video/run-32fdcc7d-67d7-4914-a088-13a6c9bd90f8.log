@@ -1,0 +1,103 @@
+2026-09-01 10:12:14.162 | INFO     | app.config.config:load_config:471 - load config from file: /home/zmond/MoneyPrinterTurbo/config.toml
+2026-09-01 10:12:14.168 | INFO     | app.config.config:<module>:588 - MoneyPrinterTurbo v1.3.5
+[32m2026-09-01 10:12:15[0m | [1mINFO[0m | "./cli.py:1492":[34m run_cli[0m - [1mstart CLI task: task_id=32fdcc7d-67d7-4914-a088-13a6c9bd90f8, stop_at=video[0m
+[32m2026-09-01 10:12:15[0m | [1mINFO[0m | "./app/services/task.py:1251":[34m _run_pipeline[0m - [1mstart task: 32fdcc7d-67d7-4914-a088-13a6c9bd90f8, stop_at: video[0m
+[32m2026-09-01 10:12:15[0m | [1mINFO[0m | "./app/utils/utils.py:234":[34m check_ffmpeg_ready[0m - [1mffmpeg check passed, using: /usr/bin/ffmpeg[0m
+[32m2026-09-01 10:12:15[0m | [1mINFO[0m | "./app/services/task.py:289":[34m generate_script[0m - [1m
+
+## generating video script[0m
+[32m2026-09-01 10:12:15[0m | [1mINFO[0m | "./app/services/llm.py:526":[34m generate_script[0m - [1mgenerating video script: subject=Funny and cute cats doing silly things, paragraph_number=1, has_custom_prompt=True, has_custom_system_prompt=False[0m
+[32m2026-09-01 10:12:15[0m | [1mINFO[0m | "./app/services/llm.py:155":[34m _generate_response[0m - [1mllm provider: gemini[0m
+[32m2026-09-01 10:12:22[0m | [32m[1mSUCCESS[0m | "./app/services/llm.py:579":[34m generate_script[0m - [32m[1mcompleted: 
+Did you know your cat thinks it's a ninja, a comedian, and a liquid all at once? From attempting gravity-defying leaps that end in a graceful thud, to squeezing into boxes clearly three sizes too small, these furry little weirdos are masters of unexpected hilarity. Watch them chase their own tails with the intensity of a seasoned hunter, or suddenly bolt across the room for no apparent reason, only to stop and stare as if you're the strange one. They'll bat at imaginary foes, dramatically flop off furniture, and then give you that innocent blink, completely oblivious to the chaos they just created. Get ready for a dose of pure, unadulterated feline silliness that proves every cat is secretly a stand-up comedian.[0m
+[32m2026-09-01 10:12:22[0m | [1mINFO[0m | "./app/services/task.py:310":[34m generate_terms[0m - [1m
+
+## generating video terms[0m
+[32m2026-09-01 10:12:22[0m | [34m[1mDEBUG[0m | "./app/services/task.py:330":[34m generate_terms[0m - [34m[1mvideo terms: [
+    "funny cats",
+    "cute kittens",
+    "cats playing",
+    "cats jumping"
+][0m
+[32m2026-09-01 10:12:22[0m | [1mINFO[0m | "./app/services/task.py:496":[34m generate_audio[0m - [1m
+
+## generating audio[0m
+[32m2026-09-01 10:12:22[0m | [1mINFO[0m | "./app/services/task.py:524":[34m generate_audio[0m - [1mno custom audio file provided, using TTS to generate audio.[0m
+[32m2026-09-01 10:12:22[0m | [1mINFO[0m | "./app/services/voice.py:841":[34m azure_tts_v1[0m - [1mstart, voice name: zh-CN-XiaoxiaoNeural, try: 1[0m
+[32m2026-09-01 10:12:25[0m | [1mINFO[0m | "./app/services/voice.py:870":[34m azure_tts_v1[0m - [1mcompleted, output file: ./storage/tasks/32fdcc7d-67d7-4914-a088-13a6c9bd90f8/audio.mp3[0m
+[32m2026-09-01 10:12:25[0m | [1mINFO[0m | "./app/services/task.py:575":[34m generate_subtitle[0m - [1m
+
+## generating subtitle[0m
+[32m2026-09-01 10:12:25[0m | [1mINFO[0m | "./app/services/task.py:581":[34m generate_subtitle[0m - [1m
+
+## generating subtitle, provider: edge[0m
+[32m2026-09-01 10:12:25[0m | [1mINFO[0m | "./app/services/voice.py:2000":[34m _write_subtitle_items[0m - [1mcompleted, subtitle file created: ./storage/tasks/32fdcc7d-67d7-4914-a088-13a6c9bd90f8/subtitle.srt, duration: 48.462[0m
+[32m2026-09-01 10:12:25[0m | [1mINFO[0m | "./app/services/task.py:707":[34m get_video_materials[0m - [1m
+
+## downloading videos from pexels[0m
+[32m2026-09-01 10:12:25[0m | [1mINFO[0m | "./app/services/material.py:312":[34m search_videos_pexels[0m - [1msearching videos on pexels: term='funny cats'[0m
+[32m2026-09-01 10:12:26[0m | [1mINFO[0m | "./app/services/material.py:1228":[34m download_videos[0m - [1mfound 17 videos for 'funny cats'[0m
+[32m2026-09-01 10:12:26[0m | [1mINFO[0m | "./app/services/material.py:312":[34m search_videos_pexels[0m - [1msearching videos on pexels: term='cute kittens'[0m
+[32m2026-09-01 10:12:27[0m | [1mINFO[0m | "./app/services/material.py:1228":[34m download_videos[0m - [1mfound 19 videos for 'cute kittens'[0m
+[32m2026-09-01 10:12:27[0m | [1mINFO[0m | "./app/services/material.py:312":[34m search_videos_pexels[0m - [1msearching videos on pexels: term='cats playing'[0m
+[32m2026-09-01 10:12:27[0m | [1mINFO[0m | "./app/services/material.py:1228":[34m download_videos[0m - [1mfound 16 videos for 'cats playing'[0m
+[32m2026-09-01 10:12:27[0m | [1mINFO[0m | "./app/services/material.py:312":[34m search_videos_pexels[0m - [1msearching videos on pexels: term='cats jumping'[0m
+[32m2026-09-01 10:12:28[0m | [1mINFO[0m | "./app/services/material.py:1228":[34m download_videos[0m - [1mfound 7 videos for 'cats jumping'[0m
+[32m2026-09-01 10:12:28[0m | [1mINFO[0m | "./app/services/material.py:1236":[34m download_videos[0m - [1mfound total videos: 50, required duration: 50 seconds, found duration: 799.0 seconds[0m
+[32m2026-09-01 10:12:28[0m | [1mINFO[0m | "./app/services/material.py:1250":[34m download_videos[0m - [1mdownloading pexels video: asset_id=27670450[0m
+[32m2026-09-01 10:12:40[0m | [1mINFO[0m | "./app/services/material.py:1258":[34m download_videos[0m - [1mvideo saved: ./storage/cache_videos/vid-392aa8c8737b154d059e5dc13919fe15.mp4[0m
+[32m2026-09-01 10:12:40[0m | [1mINFO[0m | "./app/services/material.py:1250":[34m download_videos[0m - [1mdownloading pexels video: asset_id=15386749[0m
+[32m2026-09-01 10:12:43[0m | [1mINFO[0m | "./app/services/material.py:1258":[34m download_videos[0m - [1mvideo saved: ./storage/cache_videos/vid-b54a8aab402412de4832cb4b2d6fb52c.mp4[0m
+[32m2026-09-01 10:12:43[0m | [1mINFO[0m | "./app/services/material.py:1250":[34m download_videos[0m - [1mdownloading pexels video: asset_id=34741383[0m
+[32m2026-09-01 10:12:50[0m | [1mINFO[0m | "./app/services/material.py:1258":[34m download_videos[0m - [1mvideo saved: ./storage/cache_videos/vid-7f583312c4b86689aba5fe9502ee0713.mp4[0m
+[32m2026-09-01 10:12:50[0m | [1mINFO[0m | "./app/services/material.py:1250":[34m download_videos[0m - [1mdownloading pexels video: asset_id=35449221[0m
+[32m2026-09-01 10:13:04[0m | [1mINFO[0m | "./app/services/material.py:1258":[34m download_videos[0m - [1mvideo saved: ./storage/cache_videos/vid-5b89de511dce6f69c1cf63d566c4a7c6.mp4[0m
+[32m2026-09-01 10:13:04[0m | [1mINFO[0m | "./app/services/material.py:1250":[34m download_videos[0m - [1mdownloading pexels video: asset_id=36435258[0m
+[32m2026-09-01 10:13:15[0m | [1mINFO[0m | "./app/services/material.py:1258":[34m download_videos[0m - [1mvideo saved: ./storage/cache_videos/vid-6d771ad2e0277eda1bcb6f64966fa62a.mp4[0m
+[32m2026-09-01 10:13:15[0m | [1mINFO[0m | "./app/services/material.py:1250":[34m download_videos[0m - [1mdownloading pexels video: asset_id=19072439[0m
+[32m2026-09-01 10:13:20[0m | [1mINFO[0m | "./app/services/material.py:1258":[34m download_videos[0m - [1mvideo saved: ./storage/cache_videos/vid-a3961caa3b298936e30bee0f08e44572.mp4[0m
+[32m2026-09-01 10:13:20[0m | [1mINFO[0m | "./app/services/material.py:1250":[34m download_videos[0m - [1mdownloading pexels video: asset_id=34541703[0m
+[32m2026-09-01 10:13:22[0m | [1mINFO[0m | "./app/services/material.py:1258":[34m download_videos[0m - [1mvideo saved: ./storage/cache_videos/vid-80ef1ba1e9aba2e5e953cb563753eaab.mp4[0m
+[32m2026-09-01 10:13:22[0m | [1mINFO[0m | "./app/services/material.py:1250":[34m download_videos[0m - [1mdownloading pexels video: asset_id=38754834[0m
+[32m2026-09-01 10:13:24[0m | [1mINFO[0m | "./app/services/material.py:1258":[34m download_videos[0m - [1mvideo saved: ./storage/cache_videos/vid-9455a19b95b21fc49606721524af6543.mp4[0m
+[32m2026-09-01 10:13:24[0m | [1mINFO[0m | "./app/services/material.py:1250":[34m download_videos[0m - [1mdownloading pexels video: asset_id=37822454[0m
+[32m2026-09-01 10:13:32[0m | [1mINFO[0m | "./app/services/material.py:1258":[34m download_videos[0m - [1mvideo saved: ./storage/cache_videos/vid-ef707b07f4688db385bedf6cdba6f157.mp4[0m
+[32m2026-09-01 10:13:32[0m | [1mINFO[0m | "./app/services/material.py:1250":[34m download_videos[0m - [1mdownloading pexels video: asset_id=37822458[0m
+[32m2026-09-01 10:13:41[0m | [1mINFO[0m | "./app/services/material.py:1258":[34m download_videos[0m - [1mvideo saved: ./storage/cache_videos/vid-8718ed05912df0f2ecf84d8f1ee8361a.mp4[0m
+[32m2026-09-01 10:13:41[0m | [1mINFO[0m | "./app/services/material.py:1250":[34m download_videos[0m - [1mdownloading pexels video: asset_id=34689563[0m
+[32m2026-09-01 10:13:48[0m | [1mINFO[0m | "./app/services/material.py:1258":[34m download_videos[0m - [1mvideo saved: ./storage/cache_videos/vid-72fed0bec68d63046d1bddc68c23dc1d.mp4[0m
+[32m2026-09-01 10:13:48[0m | [1mINFO[0m | "./app/services/material.py:1275":[34m download_videos[0m - [1mtotal duration of downloaded videos: 55.0 seconds, skip downloading more[0m
+[32m2026-09-01 10:13:48[0m | [32m[1mSUCCESS[0m | "./app/services/material.py:1285":[34m download_videos[0m - [32m[1mdownloaded 11 videos[0m
+[32m2026-09-01 10:13:48[0m | [1mINFO[0m | "./app/services/material.py:129":[34m _persist_material_sources[0m - [1msaved material source records: task_id=32fdcc7d-67d7-4914-a088-13a6c9bd90f8, count=11[0m
+[32m2026-09-01 10:13:48[0m | [1mINFO[0m | "./app/services/task.py:822":[34m generate_final_videos[0m - [1m
+
+## combining video: 1 => ./storage/tasks/32fdcc7d-67d7-4914-a088-13a6c9bd90f8/combined-1.mp4[0m
+[32m2026-09-01 10:13:48[0m | [1mINFO[0m | "./app/services/video.py:620":[34m combine_videos[0m - [1maudio duration: 49.06 seconds[0m
+[32m2026-09-01 10:13:48[0m | [1mINFO[0m | "./app/services/video.py:621":[34m combine_videos[0m - [1mmaximum clip duration: 5 seconds[0m
+[32m2026-09-01 10:13:48[0m | [1mINFO[0m | "./app/services/video.py:623":[34m combine_videos[0m - [1mrequired video duration: 49.16 seconds (audio duration + 0.10s safety margin)[0m
+[32m2026-09-01 10:13:52[0m | [1mINFO[0m | "./app/services/video.py:152":[34m _prioritize_unique_source_clips[0m - [1mprioritized unique video materials, sources: 11, primary clips: 11, fallback clips: 35[0m
+[32m2026-09-01 10:13:52[0m | [34m[1mDEBUG[0m | "./app/services/video.py:685":[34m combine_videos[0m - [34m[1mtotal subclipped items: 46[0m
+[32m2026-09-01 10:13:52[0m | [34m[1mDEBUG[0m | "./app/services/video.py:692":[34m combine_videos[0m - [34m[1mprocessing clip 1: 1080x1920, source: vid-b54a8aab402412de4832cb4b2d6fb52c.mp4, current duration: 0.00s, remaining: 49.16s[0m
+[32m2026-09-01 10:13:58[0m | [34m[1mDEBUG[0m | "./app/services/video.py:692":[34m combine_videos[0m - [34m[1mprocessing clip 2: 1080x1920, source: vid-7f583312c4b86689aba5fe9502ee0713.mp4, current duration: 5.00s, remaining: 44.16s[0m
+[32m2026-09-01 10:14:05[0m | [34m[1mDEBUG[0m | "./app/services/video.py:692":[34m combine_videos[0m - [34m[1mprocessing clip 3: 1080x1920, source: vid-392aa8c8737b154d059e5dc13919fe15.mp4, current duration: 10.00s, remaining: 39.16s[0m
+[32m2026-09-01 10:14:10[0m | [34m[1mDEBUG[0m | "./app/services/video.py:692":[34m combine_videos[0m - [34m[1mprocessing clip 4: 1080x1920, source: vid-6d771ad2e0277eda1bcb6f64966fa62a.mp4, current duration: 15.00s, remaining: 34.16s[0m
+[32m2026-09-01 10:14:15[0m | [34m[1mDEBUG[0m | "./app/services/video.py:692":[34m combine_videos[0m - [34m[1mprocessing clip 5: 1080x1920, source: vid-ef707b07f4688db385bedf6cdba6f157.mp4, current duration: 20.00s, remaining: 29.16s[0m
+[32m2026-09-01 10:14:20[0m | [34m[1mDEBUG[0m | "./app/services/video.py:692":[34m combine_videos[0m - [34m[1mprocessing clip 6: 1080x1920, source: vid-5b89de511dce6f69c1cf63d566c4a7c6.mp4, current duration: 25.00s, remaining: 24.16s[0m
+[32m2026-09-01 10:14:25[0m | [34m[1mDEBUG[0m | "./app/services/video.py:692":[34m combine_videos[0m - [34m[1mprocessing clip 7: 1080x1920, source: vid-a3961caa3b298936e30bee0f08e44572.mp4, current duration: 30.00s, remaining: 19.16s[0m
+[32m2026-09-01 10:14:30[0m | [34m[1mDEBUG[0m | "./app/services/video.py:692":[34m combine_videos[0m - [34m[1mprocessing clip 8: 1080x1920, source: vid-72fed0bec68d63046d1bddc68c23dc1d.mp4, current duration: 35.00s, remaining: 14.16s[0m
+[32m2026-09-01 10:14:34[0m | [34m[1mDEBUG[0m | "./app/services/video.py:692":[34m combine_videos[0m - [34m[1mprocessing clip 9: 1080x1920, source: vid-8718ed05912df0f2ecf84d8f1ee8361a.mp4, current duration: 40.00s, remaining: 9.16s[0m
+[32m2026-09-01 10:14:38[0m | [34m[1mDEBUG[0m | "./app/services/video.py:692":[34m combine_videos[0m - [34m[1mprocessing clip 10: 1080x1920, source: vid-9455a19b95b21fc49606721524af6543.mp4, current duration: 45.00s, remaining: 4.16s[0m
+[32m2026-09-01 10:14:42[0m | [1mINFO[0m | "./app/services/video.py:805":[34m combine_videos[0m - [1mstarting clip merging process[0m
+[32m2026-09-01 10:14:42[0m | [1mINFO[0m | "./app/services/video.py:811":[34m combine_videos[0m - [1mconcatenating 10 clips with ffmpeg[0m
+[32m2026-09-01 10:16:13[0m | [1mINFO[0m | "./app/services/video.py:823":[34m combine_videos[0m - [1mvideo combining completed[0m
+[32m2026-09-01 10:16:13[0m | [1mINFO[0m | "./app/services/task.py:870":[34m generate_final_videos[0m - [1m
+
+## generating video: 1 => ./storage/tasks/32fdcc7d-67d7-4914-a088-13a6c9bd90f8/final-1.mp4[0m
+[32m2026-09-01 10:16:13[0m | [1mINFO[0m | "./app/services/video.py:1071":[34m generate_video[0m - [1mgenerating video: 1080 x 1920[0m
+[32m2026-09-01 10:16:13[0m | [1mINFO[0m | "./app/services/video.py:1072":[34m generate_video[0m - [1m  ① video: ./storage/tasks/32fdcc7d-67d7-4914-a088-13a6c9bd90f8/combined-1.mp4[0m
+[32m2026-09-01 10:16:13[0m | [1mINFO[0m | "./app/services/video.py:1073":[34m generate_video[0m - [1m  ② audio: ./storage/tasks/32fdcc7d-67d7-4914-a088-13a6c9bd90f8/audio.mp3[0m
+[32m2026-09-01 10:16:13[0m | [1mINFO[0m | "./app/services/video.py:1074":[34m generate_video[0m - [1m  ③ subtitle: ./storage/tasks/32fdcc7d-67d7-4914-a088-13a6c9bd90f8/subtitle.srt[0m
+[32m2026-09-01 10:16:13[0m | [1mINFO[0m | "./app/services/video.py:1075":[34m generate_video[0m - [1m  ④ output: ./storage/tasks/32fdcc7d-67d7-4914-a088-13a6c9bd90f8/final-1.mp4[0m
+[32m2026-09-01 10:16:13[0m | [1mINFO[0m | "./app/services/video.py:1090":[34m generate_video[0m - [1m  ⑤ font: ./resource/fonts/STHeitiMedium.ttc[0m
+[32m2026-09-01 10:18:51[0m | [32m[1mSUCCESS[0m | "./app/services/task.py:1447":[34m _run_pipeline[0m - [32m[1mtask 32fdcc7d-67d7-4914-a088-13a6c9bd90f8 finished, generated 1 videos.[0m
+{"task_id": "32fdcc7d-67d7-4914-a088-13a6c9bd90f8", "result": {"videos": ["/home/zmond/MoneyPrinterTurbo/storage/tasks/32fdcc7d-67d7-4914-a088-13a6c9bd90f8/final-1.mp4"], "combined_videos": ["/home/zmond/MoneyPrinterTurbo/storage/tasks/32fdcc7d-67d7-4914-a088-13a6c9bd90f8/combined-1.mp4"], "script": "Did you know your cat thinks it's a ninja, a comedian, and a liquid all at once? From attempting gravity-defying leaps that end in a graceful thud, to squeezing into boxes clearly three sizes too small, these furry little weirdos are masters of unexpected hilarity. Watch them chase their own tails with the intensity of a seasoned hunter, or suddenly bolt across the room for no apparent reason, only to stop and stare as if you're the strange one. They'll bat at imaginary foes, dramatically flop off furniture, and then give you that innocent blink, completely oblivious to the chaos they just created. Get ready for a dose of pure, unadulterated feline silliness that proves every cat is secretly a stand-up comedian.", "terms": ["funny cats", "cute kittens", "cats playing", "cats jumping"], "audio_file": "/home/zmond/MoneyPrinterTurbo/storage/tasks/32fdcc7d-67d7-4914-a088-13a6c9bd90f8/audio.mp3", "audio_duration": 50, "subtitle_path": "/home/zmond/MoneyPrinterTurbo/storage/tasks/32fdcc7d-67d7-4914-a088-13a6c9bd90f8/subtitle.srt", "materials": ["/home/zmond/MoneyPrinterTurbo/storage/cache_videos/vid-392aa8c8737b154d059e5dc13919fe15.mp4", "/home/zmond/MoneyPrinterTurbo/storage/cache_videos/vid-b54a8aab402412de4832cb4b2d6fb52c.mp4", "/home/zmond/MoneyPrinterTurbo/storage/cache_videos/vid-7f583312c4b86689aba5fe9502ee0713.mp4", "/home/zmond/MoneyPrinterTurbo/storage/cache_videos/vid-5b89de511dce6f69c1cf63d566c4a7c6.mp4", "/home/zmond/MoneyPrinterTurbo/storage/cache_videos/vid-6d771ad2e0277eda1bcb6f64966fa62a.mp4", "/home/zmond/MoneyPrinterTurbo/storage/cache_videos/vid-a3961caa3b298936e30bee0f08e44572.mp4", "/home/zmond/MoneyPrinterTurbo/storage/cache_videos/vid-80ef1ba1e9aba2e5e953cb563753eaab.mp4", "/home/zmond/MoneyPrinterTurbo/storage/cache_videos/vid-9455a19b95b21fc49606721524af6543.mp4", "/home/zmond/MoneyPrinterTurbo/storage/cache_videos/vid-ef707b07f4688db385bedf6cdba6f157.mp4", "/home/zmond/MoneyPrinterTurbo/storage/cache_videos/vid-8718ed05912df0f2ecf84d8f1ee8361a.mp4", "/home/zmond/MoneyPrinterTurbo/storage/cache_videos/vid-72fed0bec68d63046d1bddc68c23dc1d.mp4"], "cross_post_state": null, "cross_post_results": null, "cross_post_error": null, "cross_post_owner": null, "warnings": null}}

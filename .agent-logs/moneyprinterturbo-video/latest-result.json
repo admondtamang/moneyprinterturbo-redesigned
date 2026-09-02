@@ -1,0 +1,11 @@
+{
+  "updated_at": "2026-09-01T04:33:52.449778+00:00",
+  "status": "completed",
+  "subject": "Funny and cute cats doing silly things",
+  "task_id": "32fdcc7d-67d7-4914-a088-13a6c9bd90f8",
+  "task_dir": "/home/zmond/MoneyPrinterTurbo/storage/tasks/32fdcc7d-67d7-4914-a088-13a6c9bd90f8",
+  "log_file": "/home/zmond/MoneyPrinterTurbo/.agent-logs/moneyprinterturbo-video/run-32fdcc7d-67d7-4914-a088-13a6c9bd90f8.log",
+  "video_files": [
+    "/home/zmond/MoneyPrinterTurbo/storage/tasks/32fdcc7d-67d7-4914-a088-13a6c9bd90f8/final-1.mp4"
+  ]
+}

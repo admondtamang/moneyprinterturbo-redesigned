@@ -1,0 +1,13 @@
+2026-09-01 09:39:07.595 | INFO     | app.config.config:load_config:471 - load config from file: /home/zmond/MoneyPrinterTurbo/config.toml
+2026-09-01 09:39:07.602 | INFO     | app.config.config:<module>:588 - MoneyPrinterTurbo v1.3.5
+[32m2026-09-01 09:39:08[0m | [1mINFO[0m | "./cli.py:1492":[34m run_cli[0m - [1mstart CLI task: task_id=ee352d63-1e31-45cd-aad3-793e244eadaa, stop_at=video[0m
+[32m2026-09-01 09:39:08[0m | [1mINFO[0m | "./app/services/task.py:1251":[34m _run_pipeline[0m - [1mstart task: ee352d63-1e31-45cd-aad3-793e244eadaa, stop_at: video[0m
+[32m2026-09-01 09:39:08[0m | [1mINFO[0m | "./app/utils/utils.py:234":[34m check_ffmpeg_ready[0m - [1mffmpeg check passed, using: /usr/bin/ffmpeg[0m
+[32m2026-09-01 09:39:08[0m | [1mINFO[0m | "./app/services/task.py:289":[34m generate_script[0m - [1m
+
+## generating video script[0m
+[32m2026-09-01 09:39:08[0m | [1mINFO[0m | "./app/services/llm.py:526":[34m generate_script[0m - [1mgenerating video script: subject=How AI is changing everyday life., paragraph_number=1, has_custom_prompt=False, has_custom_system_prompt=False[0m
+[32m2026-09-01 09:39:08[0m | [1mINFO[0m | "./app/services/llm.py:155":[34m _generate_response[0m - [1mllm provider: openrouter[0m
+[32m2026-09-01 09:39:09[0m | [31m[1mERROR[0m | "./app/services/llm.py:577":[34m generate_script[0m - [31m[1mfailed to generate video script: Error: Error code: 404 - {'error': {'message': 'This model is unavailable for free. The paid version is available now - use this slug instead: meta-llama/llama-3.3-70b-instruct', 'code': 404}, 'user_id': 'user_2r4WHb3H98hlDxFeFzfq569bGX4'}[0m
+[32m2026-09-01 09:39:09[0m | [31m[1mERROR[0m | "./app/services/task.py:263":[34m _mark_task_failed[0m - [31m[1mtask failed, task_id: ee352d63-1e31-45cd-aad3-793e244eadaa, stage: script, error: Error code: 404 - {'error': {'message': 'This model is unavailable for free. The paid version is available now - use this slug instead: meta-llama/llama-3.3-70b-instruct', 'code': 404}, 'user_id': 'user_2r4WHb3H98hlDxFeFzfq569bGX4'}[0m
+[32m2026-09-01 09:39:09[0m | [31m[1mERROR[0m | "./cli.py:1511":[34m run_cli[0m - [31m[1mCLI task failed: task_id=ee352d63-1e31-45cd-aad3-793e244eadaa, stop_at=video, stage=script, error=Error code: 404 - {'error': {'message': 'This model is unavailable for free. The paid version is available now - use this slug instead: meta-llama/llama-3.3-70b-instruct', 'code': 404}, 'user_id': 'user_2r4WHb3H98hlDxFeFzfq569bGX4'}[0m

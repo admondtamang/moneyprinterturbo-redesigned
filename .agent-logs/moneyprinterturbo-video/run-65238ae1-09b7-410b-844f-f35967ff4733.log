@@ -1,0 +1,13 @@
+2026-08-31 17:42:16.227 | INFO     | app.config.config:load_config:471 - load config from file: /home/zmond/MoneyPrinterTurbo/config.toml
+2026-08-31 17:42:16.230 | INFO     | app.config.config:<module>:588 - MoneyPrinterTurbo v1.3.5
+[32m2026-08-31 17:42:16[0m | [1mINFO[0m | "./cli.py:1492":[34m run_cli[0m - [1mstart CLI task: task_id=65238ae1-09b7-410b-844f-f35967ff4733, stop_at=video[0m
+[32m2026-08-31 17:42:16[0m | [1mINFO[0m | "./app/services/task.py:1251":[34m _run_pipeline[0m - [1mstart task: 65238ae1-09b7-410b-844f-f35967ff4733, stop_at: video[0m
+[32m2026-08-31 17:42:16[0m | [1mINFO[0m | "./app/utils/utils.py:234":[34m check_ffmpeg_ready[0m - [1mffmpeg check passed, using: /usr/bin/ffmpeg[0m
+[32m2026-08-31 17:42:16[0m | [1mINFO[0m | "./app/services/task.py:289":[34m generate_script[0m - [1m
+
+## generating video script[0m
+[32m2026-08-31 17:42:16[0m | [1mINFO[0m | "./app/services/llm.py:526":[34m generate_script[0m - [1mgenerating video script: subject=How AI is changing everyday life., paragraph_number=1, has_custom_prompt=False, has_custom_system_prompt=False[0m
+[32m2026-08-31 17:42:16[0m | [1mINFO[0m | "./app/services/llm.py:155":[34m _generate_response[0m - [1mllm provider: anthropic[0m
+[32m2026-08-31 17:42:17[0m | [31m[1mERROR[0m | "./app/services/llm.py:577":[34m generate_script[0m - [31m[1mfailed to generate video script: Error: Error code: 400 - {'error': {'code': 'invalid_request_error', 'message': 'anthropic-workspace-id is required when authenticating with an identity-linked API key; send the id of the workspace this request acts in.', 'type': 'invalid_request_error', 'param': None}}[0m
+[32m2026-08-31 17:42:17[0m | [31m[1mERROR[0m | "./app/services/task.py:263":[34m _mark_task_failed[0m - [31m[1mtask failed, task_id: 65238ae1-09b7-410b-844f-f35967ff4733, stage: script, error: Error code: 400 - {'error': {'code': 'invalid_request_error', 'message': 'anthropic-workspace-id is required when authenticating with an identity-linked API key; send the id of the workspace this request acts in.', 'type': 'invalid_request_error', 'param': None}}[0m
+[32m2026-08-31 17:42:17[0m | [31m[1mERROR[0m | "./cli.py:1511":[34m run_cli[0m - [31m[1mCLI task failed: task_id=65238ae1-09b7-410b-844f-f35967ff4733, stop_at=video, stage=script, error=Error code: 400 - {'error': {'code': 'invalid_request_error', 'message': 'anthropic-workspace-id is required when authenticating with an identity-linked API key; send the id of the workspace this request acts in.', 'type': 'invalid_request_error', 'param': None}}[0m

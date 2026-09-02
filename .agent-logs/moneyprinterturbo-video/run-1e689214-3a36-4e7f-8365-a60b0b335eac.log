@@ -1,0 +1,13 @@
+2026-09-01 09:47:27.403 | INFO     | app.config.config:load_config:471 - load config from file: /home/zmond/MoneyPrinterTurbo/config.toml
+2026-09-01 09:47:27.409 | INFO     | app.config.config:<module>:588 - MoneyPrinterTurbo v1.3.5
+[32m2026-09-01 09:47:28[0m | [1mINFO[0m | "./cli.py:1492":[34m run_cli[0m - [1mstart CLI task: task_id=1e689214-3a36-4e7f-8365-a60b0b335eac, stop_at=video[0m
+[32m2026-09-01 09:47:28[0m | [1mINFO[0m | "./app/services/task.py:1251":[34m _run_pipeline[0m - [1mstart task: 1e689214-3a36-4e7f-8365-a60b0b335eac, stop_at: video[0m
+[32m2026-09-01 09:47:28[0m | [1mINFO[0m | "./app/utils/utils.py:234":[34m check_ffmpeg_ready[0m - [1mffmpeg check passed, using: /usr/bin/ffmpeg[0m
+[32m2026-09-01 09:47:28[0m | [1mINFO[0m | "./app/services/task.py:289":[34m generate_script[0m - [1m
+
+## generating video script[0m
+[32m2026-09-01 09:47:28[0m | [1mINFO[0m | "./app/services/llm.py:526":[34m generate_script[0m - [1mgenerating video script: subject=How AI is changing everyday life., paragraph_number=1, has_custom_prompt=False, has_custom_system_prompt=False[0m
+[32m2026-09-01 09:47:28[0m | [1mINFO[0m | "./app/services/llm.py:155":[34m _generate_response[0m - [1mllm provider: gemini[0m
+[32m2026-09-01 09:47:31[0m | [31m[1mERROR[0m | "./app/services/llm.py:577":[34m generate_script[0m - [31m[1mfailed to generate video script: Error: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}[0m
+[32m2026-09-01 09:47:31[0m | [31m[1mERROR[0m | "./app/services/task.py:263":[34m _mark_task_failed[0m - [31m[1mtask failed, task_id: 1e689214-3a36-4e7f-8365-a60b0b335eac, stage: script, error: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}[0m
+[32m2026-09-01 09:47:31[0m | [31m[1mERROR[0m | "./cli.py:1511":[34m run_cli[0m - [31m[1mCLI task failed: task_id=1e689214-3a36-4e7f-8365-a60b0b335eac, stop_at=video, stage=script, error=503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}[0m

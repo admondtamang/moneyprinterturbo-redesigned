@@ -1,0 +1,105 @@
+2026-09-01 09:54:18.598 | INFO     | app.config.config:load_config:471 - load config from file: /home/zmond/MoneyPrinterTurbo/config.toml
+2026-09-01 09:54:18.604 | INFO     | app.config.config:<module>:588 - MoneyPrinterTurbo v1.3.5
+[32m2026-09-01 09:54:19[0m | [1mINFO[0m | "./cli.py:1492":[34m run_cli[0m - [1mstart CLI task: task_id=65444a08-820d-49e0-a94f-5e40700df66e, stop_at=video[0m
+[32m2026-09-01 09:54:19[0m | [1mINFO[0m | "./app/services/task.py:1251":[34m _run_pipeline[0m - [1mstart task: 65444a08-820d-49e0-a94f-5e40700df66e, stop_at: video[0m
+[32m2026-09-01 09:54:19[0m | [1mINFO[0m | "./app/utils/utils.py:234":[34m check_ffmpeg_ready[0m - [1mffmpeg check passed, using: /usr/bin/ffmpeg[0m
+[32m2026-09-01 09:54:19[0m | [1mINFO[0m | "./app/services/task.py:289":[34m generate_script[0m - [1m
+
+## generating video script[0m
+[32m2026-09-01 09:54:19[0m | [1mINFO[0m | "./app/services/llm.py:526":[34m generate_script[0m - [1mgenerating video script: subject=How AI is changing everyday life., paragraph_number=1, has_custom_prompt=False, has_custom_system_prompt=False[0m
+[32m2026-09-01 09:54:19[0m | [1mINFO[0m | "./app/services/llm.py:155":[34m _generate_response[0m - [1mllm provider: gemini[0m
+[32m2026-09-01 09:54:25[0m | [32m[1mSUCCESS[0m | "./app/services/llm.py:579":[34m generate_script[0m - [32m[1mcompleted: 
+Artificial intelligence is no longer a futuristic concept; it's an embedded part of our daily routines. From personalized recommendations on streaming services and social media feeds to smart assistants managing our homes and schedules, AI streamlines countless interactions. It powers the navigation apps that guide our commutes, refines search engine results to provide instant answers, and even enhances the security systems protecting our data. Beyond convenience, AI is revolutionizing healthcare with diagnostic tools, transforming industries through automation, and making our devices intuitively responsive to our needs, fundamentally reshaping how we live, work, and interact with the world around us.[0m
+[32m2026-09-01 09:54:25[0m | [1mINFO[0m | "./app/services/task.py:310":[34m generate_terms[0m - [1m
+
+## generating video terms[0m
+[32m2026-09-01 09:54:25[0m | [1mINFO[0m | "./app/services/llm.py:661":[34m generate_terms[0m - [1msubject: How AI is changing everyday life., match_script_order: False[0m
+[32m2026-09-01 09:54:25[0m | [1mINFO[0m | "./app/services/llm.py:155":[34m _generate_response[0m - [1mllm provider: gemini[0m
+[32m2026-09-01 09:54:29[0m | [32m[1mSUCCESS[0m | "./app/services/llm.py:703":[34m generate_terms[0m - [32m[1mcompleted: 
+['AI everyday life', 'Smart home AI', 'AI work automation', 'AI healthcare', 'Digital life AI'][0m
+[32m2026-09-01 09:54:29[0m | [1mINFO[0m | "./app/services/task.py:496":[34m generate_audio[0m - [1m
+
+## generating audio[0m
+[32m2026-09-01 09:54:29[0m | [1mINFO[0m | "./app/services/task.py:524":[34m generate_audio[0m - [1mno custom audio file provided, using TTS to generate audio.[0m
+[32m2026-09-01 09:54:29[0m | [1mINFO[0m | "./app/services/voice.py:841":[34m azure_tts_v1[0m - [1mstart, voice name: zh-CN-XiaoxiaoNeural, try: 1[0m
+[32m2026-09-01 09:54:33[0m | [1mINFO[0m | "./app/services/voice.py:870":[34m azure_tts_v1[0m - [1mcompleted, output file: ./storage/tasks/65444a08-820d-49e0-a94f-5e40700df66e/audio.mp3[0m
+[32m2026-09-01 09:54:33[0m | [1mINFO[0m | "./app/services/task.py:575":[34m generate_subtitle[0m - [1m
+
+## generating subtitle[0m
+[32m2026-09-01 09:54:33[0m | [1mINFO[0m | "./app/services/task.py:581":[34m generate_subtitle[0m - [1m
+
+## generating subtitle, provider: edge[0m
+[32m2026-09-01 09:54:33[0m | [1mINFO[0m | "./app/services/voice.py:2000":[34m _write_subtitle_items[0m - [1mcompleted, subtitle file created: ./storage/tasks/65444a08-820d-49e0-a94f-5e40700df66e/subtitle.srt, duration: 48.538[0m
+[32m2026-09-01 09:54:33[0m | [1mINFO[0m | "./app/services/task.py:707":[34m get_video_materials[0m - [1m
+
+## downloading videos from pexels[0m
+[32m2026-09-01 09:54:33[0m | [1mINFO[0m | "./app/services/material.py:312":[34m search_videos_pexels[0m - [1msearching videos on pexels: term='AI everyday life'[0m
+[32m2026-09-01 09:54:33[0m | [1mINFO[0m | "./app/services/material.py:1228":[34m download_videos[0m - [1mfound 15 videos for 'AI everyday life'[0m
+[32m2026-09-01 09:54:33[0m | [1mINFO[0m | "./app/services/material.py:312":[34m search_videos_pexels[0m - [1msearching videos on pexels: term='Smart home AI'[0m
+[32m2026-09-01 09:54:34[0m | [1mINFO[0m | "./app/services/material.py:1228":[34m download_videos[0m - [1mfound 17 videos for 'Smart home AI'[0m
+[32m2026-09-01 09:54:34[0m | [1mINFO[0m | "./app/services/material.py:312":[34m search_videos_pexels[0m - [1msearching videos on pexels: term='AI work automation'[0m
+[32m2026-09-01 09:54:35[0m | [1mINFO[0m | "./app/services/material.py:1228":[34m download_videos[0m - [1mfound 20 videos for 'AI work automation'[0m
+[32m2026-09-01 09:54:35[0m | [1mINFO[0m | "./app/services/material.py:312":[34m search_videos_pexels[0m - [1msearching videos on pexels: term='AI healthcare'[0m
+[32m2026-09-01 09:54:35[0m | [1mINFO[0m | "./app/services/material.py:1228":[34m download_videos[0m - [1mfound 15 videos for 'AI healthcare'[0m
+[32m2026-09-01 09:54:35[0m | [1mINFO[0m | "./app/services/material.py:312":[34m search_videos_pexels[0m - [1msearching videos on pexels: term='Digital life AI'[0m
+[32m2026-09-01 09:54:36[0m | [1mINFO[0m | "./app/services/material.py:1228":[34m download_videos[0m - [1mfound 14 videos for 'Digital life AI'[0m
+[32m2026-09-01 09:54:36[0m | [1mINFO[0m | "./app/services/material.py:1236":[34m download_videos[0m - [1mfound total videos: 60, required duration: 50 seconds, found duration: 974.0 seconds[0m
+[32m2026-09-01 09:54:36[0m | [1mINFO[0m | "./app/services/material.py:1250":[34m download_videos[0m - [1mdownloading pexels video: asset_id=8087076[0m
+[32m2026-09-01 09:54:41[0m | [1mINFO[0m | "./app/services/material.py:1258":[34m download_videos[0m - [1mvideo saved: ./storage/cache_videos/vid-8deec09939cead8edaab0ad3be3f8e15.mp4[0m
+[32m2026-09-01 09:54:41[0m | [1mINFO[0m | "./app/services/material.py:1250":[34m download_videos[0m - [1mdownloading pexels video: asset_id=8087308[0m
+[32m2026-09-01 09:54:43[0m | [1mINFO[0m | "./app/services/material.py:1258":[34m download_videos[0m - [1mvideo saved: ./storage/cache_videos/vid-83b0efca7ddc2ebc7447c3c64f6af788.mp4[0m
+[32m2026-09-01 09:54:43[0m | [1mINFO[0m | "./app/services/material.py:1250":[34m download_videos[0m - [1mdownloading pexels video: asset_id=8979539[0m
+[32m2026-09-01 09:54:44[0m | [1mINFO[0m | "./app/services/material.py:1258":[34m download_videos[0m - [1mvideo saved: ./storage/cache_videos/vid-6f622a5bd9300a7b5f3e335f26bf4f50.mp4[0m
+[32m2026-09-01 09:54:44[0m | [1mINFO[0m | "./app/services/material.py:1250":[34m download_videos[0m - [1mdownloading pexels video: asset_id=8566783[0m
+[32m2026-09-01 09:54:46[0m | [1mINFO[0m | "./app/services/material.py:1258":[34m download_videos[0m - [1mvideo saved: ./storage/cache_videos/vid-9a0e82ef7f58a738f956d57545d6c76b.mp4[0m
+[32m2026-09-01 09:54:46[0m | [1mINFO[0m | "./app/services/material.py:1250":[34m download_videos[0m - [1mdownloading pexels video: asset_id=8328101[0m
+[32m2026-09-01 09:54:47[0m | [1mINFO[0m | "./app/services/material.py:1258":[34m download_videos[0m - [1mvideo saved: ./storage/cache_videos/vid-840634fedb1228522291bce75078988d.mp4[0m
+[32m2026-09-01 09:54:47[0m | [1mINFO[0m | "./app/services/material.py:1250":[34m download_videos[0m - [1mdownloading pexels video: asset_id=17144481[0m
+[32m2026-09-01 09:54:48[0m | [1mINFO[0m | "./app/services/material.py:1258":[34m download_videos[0m - [1mvideo saved: ./storage/cache_videos/vid-04542a2f79989ed5f61a37b0d78e25b3.mp4[0m
+[32m2026-09-01 09:54:48[0m | [1mINFO[0m | "./app/services/material.py:1250":[34m download_videos[0m - [1mdownloading pexels video: asset_id=8566780[0m
+[32m2026-09-01 09:54:51[0m | [1mINFO[0m | "./app/services/material.py:1258":[34m download_videos[0m - [1mvideo saved: ./storage/cache_videos/vid-11d372e4e0ed432a4d1d8a8e3dc4699d.mp4[0m
+[32m2026-09-01 09:54:51[0m | [1mINFO[0m | "./app/services/material.py:1250":[34m download_videos[0m - [1mdownloading pexels video: asset_id=8087315[0m
+[32m2026-09-01 09:54:52[0m | [1mINFO[0m | "./app/services/material.py:1258":[34m download_videos[0m - [1mvideo saved: ./storage/cache_videos/vid-7a619beeca125451abcc23fc22091e94.mp4[0m
+[32m2026-09-01 09:54:52[0m | [1mINFO[0m | "./app/services/material.py:1250":[34m download_videos[0m - [1mdownloading pexels video: asset_id=8087021[0m
+[32m2026-09-01 09:55:01[0m | [1mINFO[0m | "./app/services/material.py:1258":[34m download_videos[0m - [1mvideo saved: ./storage/cache_videos/vid-86a9ce41af5a9edfd97bd3051e63e444.mp4[0m
+[32m2026-09-01 09:55:01[0m | [1mINFO[0m | "./app/services/material.py:1250":[34m download_videos[0m - [1mdownloading pexels video: asset_id=27168142[0m
+[32m2026-09-01 09:55:04[0m | [1mINFO[0m | "./app/services/material.py:1258":[34m download_videos[0m - [1mvideo saved: ./storage/cache_videos/vid-63417c7e7e471f593d35f773e18d31f3.mp4[0m
+[32m2026-09-01 09:55:04[0m | [1mINFO[0m | "./app/services/material.py:1250":[34m download_videos[0m - [1mdownloading pexels video: asset_id=9029355[0m
+[32m2026-09-01 09:55:07[0m | [1mINFO[0m | "./app/services/material.py:1258":[34m download_videos[0m - [1mvideo saved: ./storage/cache_videos/vid-2cb65a7465d02910da45d605ae088027.mp4[0m
+[32m2026-09-01 09:55:07[0m | [1mINFO[0m | "./app/services/material.py:1275":[34m download_videos[0m - [1mtotal duration of downloaded videos: 55.0 seconds, skip downloading more[0m
+[32m2026-09-01 09:55:07[0m | [32m[1mSUCCESS[0m | "./app/services/material.py:1285":[34m download_videos[0m - [32m[1mdownloaded 11 videos[0m
+[32m2026-09-01 09:55:07[0m | [1mINFO[0m | "./app/services/material.py:129":[34m _persist_material_sources[0m - [1msaved material source records: task_id=65444a08-820d-49e0-a94f-5e40700df66e, count=11[0m
+[32m2026-09-01 09:55:07[0m | [1mINFO[0m | "./app/services/task.py:822":[34m generate_final_videos[0m - [1m
+
+## combining video: 1 => ./storage/tasks/65444a08-820d-49e0-a94f-5e40700df66e/combined-1.mp4[0m
+[32m2026-09-01 09:55:08[0m | [1mINFO[0m | "./app/services/video.py:620":[34m combine_videos[0m - [1maudio duration: 49.13 seconds[0m
+[32m2026-09-01 09:55:08[0m | [1mINFO[0m | "./app/services/video.py:621":[34m combine_videos[0m - [1mmaximum clip duration: 5 seconds[0m
+[32m2026-09-01 09:55:08[0m | [1mINFO[0m | "./app/services/video.py:623":[34m combine_videos[0m - [1mrequired video duration: 49.23 seconds (audio duration + 0.10s safety margin)[0m
+[32m2026-09-01 09:55:13[0m | [1mINFO[0m | "./app/services/video.py:152":[34m _prioritize_unique_source_clips[0m - [1mprioritized unique video materials, sources: 11, primary clips: 11, fallback clips: 25[0m
+[32m2026-09-01 09:55:13[0m | [34m[1mDEBUG[0m | "./app/services/video.py:685":[34m combine_videos[0m - [34m[1mtotal subclipped items: 36[0m
+[32m2026-09-01 09:55:13[0m | [34m[1mDEBUG[0m | "./app/services/video.py:692":[34m combine_videos[0m - [34m[1mprocessing clip 1: 720x1280, source: vid-86a9ce41af5a9edfd97bd3051e63e444.mp4, current duration: 0.00s, remaining: 49.23s[0m
+[32m2026-09-01 09:55:13[0m | [34m[1mDEBUG[0m | "./app/services/video.py:715":[34m combine_videos[0m - [34m[1mresizing clip, source: 720x1280, ratio: 0.56, target: 1080x1920, ratio: 0.56, fit_mode: cover[0m
+[32m2026-09-01 09:55:27[0m | [34m[1mDEBUG[0m | "./app/services/video.py:692":[34m combine_videos[0m - [34m[1mprocessing clip 2: 1080x1920, source: vid-83b0efca7ddc2ebc7447c3c64f6af788.mp4, current duration: 5.00s, remaining: 44.23s[0m
+[32m2026-09-01 09:55:31[0m | [34m[1mDEBUG[0m | "./app/services/video.py:692":[34m combine_videos[0m - [34m[1mprocessing clip 3: 1080x1920, source: vid-11d372e4e0ed432a4d1d8a8e3dc4699d.mp4, current duration: 10.00s, remaining: 39.23s[0m
+[32m2026-09-01 09:55:35[0m | [34m[1mDEBUG[0m | "./app/services/video.py:692":[34m combine_videos[0m - [34m[1mprocessing clip 4: 720x1280, source: vid-840634fedb1228522291bce75078988d.mp4, current duration: 15.00s, remaining: 34.23s[0m
+[32m2026-09-01 09:55:35[0m | [34m[1mDEBUG[0m | "./app/services/video.py:715":[34m combine_videos[0m - [34m[1mresizing clip, source: 720x1280, ratio: 0.56, target: 1080x1920, ratio: 0.56, fit_mode: cover[0m
+[32m2026-09-01 09:55:47[0m | [34m[1mDEBUG[0m | "./app/services/video.py:692":[34m combine_videos[0m - [34m[1mprocessing clip 5: 1080x1920, source: vid-6f622a5bd9300a7b5f3e335f26bf4f50.mp4, current duration: 20.00s, remaining: 29.23s[0m
+[32m2026-09-01 09:55:51[0m | [34m[1mDEBUG[0m | "./app/services/video.py:692":[34m combine_videos[0m - [34m[1mprocessing clip 6: 1080x1920, source: vid-8deec09939cead8edaab0ad3be3f8e15.mp4, current duration: 25.00s, remaining: 24.23s[0m
+[32m2026-09-01 09:55:55[0m | [34m[1mDEBUG[0m | "./app/services/video.py:692":[34m combine_videos[0m - [34m[1mprocessing clip 7: 1080x1920, source: vid-9a0e82ef7f58a738f956d57545d6c76b.mp4, current duration: 30.00s, remaining: 19.23s[0m
+[32m2026-09-01 09:56:00[0m | [34m[1mDEBUG[0m | "./app/services/video.py:692":[34m combine_videos[0m - [34m[1mprocessing clip 8: 1080x1920, source: vid-7a619beeca125451abcc23fc22091e94.mp4, current duration: 35.00s, remaining: 14.23s[0m
+[32m2026-09-01 09:56:05[0m | [34m[1mDEBUG[0m | "./app/services/video.py:692":[34m combine_videos[0m - [34m[1mprocessing clip 9: 1080x1920, source: vid-2cb65a7465d02910da45d605ae088027.mp4, current duration: 40.00s, remaining: 9.23s[0m
+[32m2026-09-01 09:56:09[0m | [34m[1mDEBUG[0m | "./app/services/video.py:692":[34m combine_videos[0m - [34m[1mprocessing clip 10: 1080x1920, source: vid-63417c7e7e471f593d35f773e18d31f3.mp4, current duration: 45.00s, remaining: 4.23s[0m
+[32m2026-09-01 09:56:14[0m | [1mINFO[0m | "./app/services/video.py:805":[34m combine_videos[0m - [1mstarting clip merging process[0m
+[32m2026-09-01 09:56:14[0m | [1mINFO[0m | "./app/services/video.py:811":[34m combine_videos[0m - [1mconcatenating 10 clips with ffmpeg[0m
+[32m2026-09-01 09:57:22[0m | [1mINFO[0m | "./app/services/video.py:823":[34m combine_videos[0m - [1mvideo combining completed[0m
+[32m2026-09-01 09:57:22[0m | [1mINFO[0m | "./app/services/task.py:870":[34m generate_final_videos[0m - [1m
+
+## generating video: 1 => ./storage/tasks/65444a08-820d-49e0-a94f-5e40700df66e/final-1.mp4[0m
+[32m2026-09-01 09:57:22[0m | [1mINFO[0m | "./app/services/video.py:1071":[34m generate_video[0m - [1mgenerating video: 1080 x 1920[0m
+[32m2026-09-01 09:57:22[0m | [1mINFO[0m | "./app/services/video.py:1072":[34m generate_video[0m - [1m  ① video: ./storage/tasks/65444a08-820d-49e0-a94f-5e40700df66e/combined-1.mp4[0m
+[32m2026-09-01 09:57:22[0m | [1mINFO[0m | "./app/services/video.py:1073":[34m generate_video[0m - [1m  ② audio: ./storage/tasks/65444a08-820d-49e0-a94f-5e40700df66e/audio.mp3[0m
+[32m2026-09-01 09:57:22[0m | [1mINFO[0m | "./app/services/video.py:1074":[34m generate_video[0m - [1m  ③ subtitle: ./storage/tasks/65444a08-820d-49e0-a94f-5e40700df66e/subtitle.srt[0m
+[32m2026-09-01 09:57:22[0m | [1mINFO[0m | "./app/services/video.py:1075":[34m generate_video[0m - [1m  ④ output: ./storage/tasks/65444a08-820d-49e0-a94f-5e40700df66e/final-1.mp4[0m
+[32m2026-09-01 09:57:22[0m | [1mINFO[0m | "./app/services/video.py:1090":[34m generate_video[0m - [1m  ⑤ font: ./resource/fonts/STHeitiMedium.ttc[0m
+[32m2026-09-01 10:00:42[0m | [32m[1mSUCCESS[0m | "./app/services/task.py:1447":[34m _run_pipeline[0m - [32m[1mtask 65444a08-820d-49e0-a94f-5e40700df66e finished, generated 1 videos.[0m
+{"task_id": "65444a08-820d-49e0-a94f-5e40700df66e", "result": {"videos": ["/home/zmond/MoneyPrinterTurbo/storage/tasks/65444a08-820d-49e0-a94f-5e40700df66e/final-1.mp4"], "combined_videos": ["/home/zmond/MoneyPrinterTurbo/storage/tasks/65444a08-820d-49e0-a94f-5e40700df66e/combined-1.mp4"], "script": "Artificial intelligence is no longer a futuristic concept; it's an embedded part of our daily routines. From personalized recommendations on streaming services and social media feeds to smart assistants managing our homes and schedules, AI streamlines countless interactions. It powers the navigation apps that guide our commutes, refines search engine results to provide instant answers, and even enhances the security systems protecting our data. Beyond convenience, AI is revolutionizing healthcare with diagnostic tools, transforming industries through automation, and making our devices intuitively responsive to our needs, fundamentally reshaping how we live, work, and interact with the world around us.", "terms": ["AI everyday life", "Smart home AI", "AI work automation", "AI healthcare", "Digital life AI"], "audio_file": "/home/zmond/MoneyPrinterTurbo/storage/tasks/65444a08-820d-49e0-a94f-5e40700df66e/audio.mp3", "audio_duration": 50, "subtitle_path": "/home/zmond/MoneyPrinterTurbo/storage/tasks/65444a08-820d-49e0-a94f-5e40700df66e/subtitle.srt", "materials": ["/home/zmond/MoneyPrinterTurbo/storage/cache_videos/vid-8deec09939cead8edaab0ad3be3f8e15.mp4", "/home/zmond/MoneyPrinterTurbo/storage/cache_videos/vid-83b0efca7ddc2ebc7447c3c64f6af788.mp4", "/home/zmond/MoneyPrinterTurbo/storage/cache_videos/vid-6f622a5bd9300a7b5f3e335f26bf4f50.mp4", "/home/zmond/MoneyPrinterTurbo/storage/cache_videos/vid-9a0e82ef7f58a738f956d57545d6c76b.mp4", "/home/zmond/MoneyPrinterTurbo/storage/cache_videos/vid-840634fedb1228522291bce75078988d.mp4", "/home/zmond/MoneyPrinterTurbo/storage/cache_videos/vid-04542a2f79989ed5f61a37b0d78e25b3.mp4", "/home/zmond/MoneyPrinterTurbo/storage/cache_videos/vid-11d372e4e0ed432a4d1d8a8e3dc4699d.mp4", "/home/zmond/MoneyPrinterTurbo/storage/cache_videos/vid-7a619beeca125451abcc23fc22091e94.mp4", "/home/zmond/MoneyPrinterTurbo/storage/cache_videos/vid-86a9ce41af5a9edfd97bd3051e63e444.mp4", "/home/zmond/MoneyPrinterTurbo/storage/cache_videos/vid-63417c7e7e471f593d35f773e18d31f3.mp4", "/home/zmond/MoneyPrinterTurbo/storage/cache_videos/vid-2cb65a7465d02910da45d605ae088027.mp4"], "cross_post_state": null, "cross_post_results": null, "cross_post_error": null, "cross_post_owner": null, "warnings": null}}

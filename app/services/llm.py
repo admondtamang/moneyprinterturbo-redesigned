@@ -41,6 +41,7 @@ Generate a script for a video, depending on the subject of the video.
 6. do not include "voiceover", "narrator" or similar indicators of what should be spoken at the beginning of each paragraph or line.
 7. you must not mention the prompt, or anything about the script itself. also, never talk about the amount of paragraphs or lines. just write the script.
 8. respond in the same language as the video subject.
+9. the very first sentence must be a direct question to the viewer that creates a curiosity gap about the subject; never open with a plain statement of fact or a generic phrase.
 """.strip()
 
 

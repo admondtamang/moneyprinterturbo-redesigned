@@ -48,6 +48,8 @@ class UploadPostService:
         platforms: Optional[list] = None,
         privacy_level: str = "PUBLIC_TO_EVERYONE",
         youtube_extra: Optional[dict] = None,
+        scheduled_date: Optional[str] = None,
+        timezone: Optional[str] = None,
     ) -> dict:
         if not self.is_configured():
             logger.warning("Upload-Post is not configured. Skipping cross-post.")
@@ -75,6 +77,11 @@ class UploadPostService:
                 for platform in platforms:
                     data.append(('platform[]', platform))
 
+                if scheduled_date:
+                    data.append(('scheduled_date', scheduled_date))
+                    if timezone:
+                        data.append(('timezone', timezone))
+
                 if youtube_extra and any(p.startswith("youtube") for p in platforms):
                     if "youtube_title" in youtube_extra:
                         data.append(('youtube_title', youtube_extra["youtube_title"][:100]))
@@ -99,7 +106,8 @@ class UploadPostService:
                 result = response.json()
 
                 if result.get('success'):
-                    logger.info(f"✅ Video cross-posted successfully! Request ID: {result.get('request_id')}")
+                    ref_id = result.get('job_id') or result.get('request_id')
+                    logger.info(f"✅ Video cross-post accepted! Job/Request ID: {ref_id}")
                 else:
                     logger.warning(f"Cross-post failed: {result.get('message', 'Unknown error')}")
 
@@ -148,5 +156,14 @@ def cross_post_video(
     title: str,
     platforms: Optional[list] = None,
     youtube_extra: Optional[dict] = None,
+    scheduled_date: Optional[str] = None,
+    timezone: Optional[str] = None,
 ) -> dict:
-    return upload_post_service.upload_video(video_path, title, platforms, youtube_extra=youtube_extra)
+    return upload_post_service.upload_video(
+        video_path,
+        title,
+        platforms,
+        youtube_extra=youtube_extra,
+        scheduled_date=scheduled_date,
+        timezone=timezone,
+    )

@@ -25,7 +25,7 @@ UI_VOICE_MODE_NONE = "none"
 # 默认，只在模块导入时读取一次 config.ui：此时 config.toml 里的非法值会被
 # 直接冻结进模型，既不会校验也无法在测试中替换。CLI 因此自己保存一份，
 # 保证“非法保存值回退到默认值”对命令行始终成立。
-DEFAULT_SUBTITLE_POSITION = "bottom"
+DEFAULT_SUBTITLE_POSITION = "safe_bottom"
 DEFAULT_CUSTOM_POSITION = 70.0
 UI_VOICE_MODE_UPLOAD = "upload"
 # 这两种保存的配音方式都表示不要自动配音。
@@ -103,9 +103,10 @@ def _hex_color(value: str) -> str:
 
 def _subtitle_position(value: str) -> str:
     """校验保存的字幕位置，取值范围与命令行参数保持一致。"""
-    if value not in ("top", "center", "bottom", "custom"):
+    if value not in ("top", "center", "bottom", "safe_bottom", "custom"):
         raise argparse.ArgumentTypeError(
-            f"subtitle-position must be one of: top, center, bottom, custom, got {value!r}"
+            "subtitle-position must be one of: top, center, bottom, safe_bottom, "
+            f"custom, got {value!r}"
         )
     return value
 
@@ -448,11 +449,12 @@ Batch manifests:
     )
     subtitle_group.add_argument(
         "--subtitle-position",
-        choices=["top", "center", "bottom", "custom"],
+        choices=["top", "center", "bottom", "safe_bottom", "custom"],
         default=None,
         help=(
-            "subtitle vertical position (default: [ui].subtitle_position from "
-            "config.toml; bottom when unset)"
+            "subtitle vertical position; safe_bottom sits in the lower third "
+            "clear of platform UI overlap (default: [ui].subtitle_position "
+            "from config.toml; safe_bottom when unset)"
         ),
     )
     subtitle_group.add_argument(
@@ -480,8 +482,8 @@ Batch manifests:
         type=_positive_int,
         default=None,
         help=(
-            "subtitle font size (default: [ui].font_size from config.toml; "
-            "60 when unset)"
+            "subtitle font size in pixels (default: [ui].font_size from "
+            "config.toml; auto — about 5%% of frame height — when unset)"
         ),
     )
     subtitle_group.add_argument(
@@ -529,6 +531,27 @@ Batch manifests:
             "use a rounded subtitle background (default: "
             "[ui].rounded_subtitle_background from config.toml; "
             "disabled when unset)"
+        ),
+    )
+    subtitle_group.add_argument(
+        "--subtitle-uppercase",
+        default=None,
+        action=argparse.BooleanOptionalAction,
+        help=(
+            "render subtitle text in uppercase; use --no-subtitle-uppercase to "
+            "disable (default: disabled when unset). Equivalent to and "
+            "overrides --caption-case upper"
+        ),
+    )
+    subtitle_group.add_argument(
+        "--caption-case",
+        choices=["sentence", "upper", "original"],
+        default=None,
+        help=(
+            "caption text case: sentence capitalizes each caption's first "
+            "letter, upper is ALL CAPS, original leaves TTS/script casing "
+            "untouched (default: [ui].caption_case from config.toml; "
+            "sentence when unset)"
         ),
     )
 
@@ -760,6 +783,8 @@ def build_video_params(args: argparse.Namespace) -> VideoParams:
         "stroke_color",
         "stroke_width",
         "rounded_subtitle_background",
+        "subtitle_uppercase",
+        "caption_case",
     ]
     for name in optional_arg_names:
         value = getattr(args, name)
@@ -771,6 +796,7 @@ def build_video_params(args: argparse.Namespace) -> VideoParams:
     ui_defaults = (
         ("video_fit_mode", str, _video_fit_mode),
         ("font_name", str, None),
+        ("caption_case", str, None),
         ("text_fore_color", str, _hex_color),
         ("font_size", int, _positive_int),
         ("rounded_subtitle_background", bool, None),
@@ -1014,9 +1040,9 @@ def _validate_batch_task_params(
 
     if stop_at == "subtitle" and not params.subtitle_enabled:
         raise ValueError("stop_at=subtitle cannot be combined with disabled subtitles")
-    if params.subtitle_position not in {"top", "center", "bottom", "custom"}:
+    if params.subtitle_position not in {"top", "center", "bottom", "safe_bottom", "custom"}:
         raise ValueError(
-            "subtitle_position must be one of: top, center, bottom, custom"
+            "subtitle_position must be one of: top, center, bottom, safe_bottom, custom"
         )
     if custom_position_is_explicit and params.subtitle_position != "custom":
         raise ValueError("custom_position requires subtitle_position=custom")

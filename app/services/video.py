@@ -22,6 +22,7 @@ from moviepy import (
     TextClip,
     VideoFileClip,
     afx,
+    vfx,
 )
 from moviepy.video.tools.subtitles import SubtitlesClip
 from PIL import Image, ImageDraw, ImageFont
@@ -824,105 +825,127 @@ def combine_videos(
     return combined_video_path
 
 
-def wrap_text(text, max_width, font="Arial", fontsize=60):
+def wrap_text(text, max_width, font="Arial", fontsize=60, max_lines=None, min_fontsize_ratio=0.6):
     # 字幕换行必须在真正创建 TextClip 前完成，否则 MoviePy 只会按原始文本
     # 计算渲染区域。这里用 PIL 按当前字体和字号测量宽度，确保每一行都尽量
     # 控制在视频可用宽度内，避免大字号或中文长句直接溢出画面。
-    font = ImageFont.truetype(font, fontsize)
     max_width = int(max_width)
 
-    # getbbox() 返回的是“当前字形的可见墨迹高度”，并不是字体行高。例如只含
-    # A、m、n 等无下伸部字符的英文会缺少 descent，多行时这个误差会逐行累积，
-    # 最终让 TextClip 的最后一行被画布裁掉。ascent + descent 来自字体自身，
-    # 不受具体语种和字符组合影响，也与 MoviePy 的 baseline 绘制模型一致。
-    ascent, descent = font.getmetrics()
-    line_height = int(ascent + descent)
-    if line_height <= 0:
-        # 正常 TrueType/OpenType 字体不会进入这里；保留可诊断日志和字号兜底，
-        # 避免损坏或非常规字体返回异常 metrics 后生成零高度字幕。
-        logger.warning(
-            "invalid subtitle font metrics, fallback to font size: "
-            f"ascent={ascent}, descent={descent}, fontsize={fontsize}"
-        )
-        line_height = max(1, int(fontsize))
+    def _wrap_once(current_fontsize):
+        # 整套换行算法按给定字号跑一遍，返回结果、画布高度和实际行数。
+        # 拆成内层函数是为了在 max_lines 收缩循环里按不同字号重复调用，
+        # 而不用改动下面任何一行原有换行逻辑。
+        pil_font = ImageFont.truetype(font, current_fontsize)
 
-    def get_text_size(inner_text):
-        inner_text = inner_text.strip()
-        if not inner_text:
-            return 0, line_height
-        left, top, right, bottom = font.getbbox(inner_text)
-        # bbox 仍适合测量换行所需的实际宽度；高度必须始终使用稳定字体行高。
-        return right - left, line_height
+        # getbbox() 返回的是“当前字形的可见墨迹高度”，并不是字体行高。例如只含
+        # A、m、n 等无下伸部字符的英文会缺少 descent，多行时这个误差会逐行累积，
+        # 最终让 TextClip 的最后一行被画布裁掉。ascent + descent 来自字体自身，
+        # 不受具体语种和字符组合影响，也与 MoviePy 的 baseline 绘制模型一致。
+        ascent, descent = pil_font.getmetrics()
+        line_height = int(ascent + descent)
+        if line_height <= 0:
+            # 正常 TrueType/OpenType 字体不会进入这里；保留可诊断日志和字号兜底，
+            # 避免损坏或非常规字体返回异常 metrics 后生成零高度字幕。
+            logger.warning(
+                "invalid subtitle font metrics, fallback to font size: "
+                f"ascent={ascent}, descent={descent}, fontsize={current_fontsize}"
+            )
+            line_height = max(1, int(current_fontsize))
 
-    width, height = get_text_size(text)
-    if width <= max_width:
-        # SRT 条目允许作者手工换行。即使整段文本在宽度上不需要再次折行，
-        # 画布高度仍必须按现有行数计算，否则第二行及后续行会被裁掉。
-        return text, (text.count("\n") + 1) * line_height
+        def get_text_size(inner_text):
+            inner_text = inner_text.strip()
+            if not inner_text:
+                return 0, line_height
+            left, top, right, bottom = pil_font.getbbox(inner_text)
+            # bbox 仍适合测量换行所需的实际宽度；高度必须始终使用稳定字体行高。
+            return right - left, line_height
 
-    def split_long_token(token):
-        # 当一个 token 本身就超宽时（常见于中文无空格长句，或英文超长单词），
-        # 退化为字符级拆分。关键点是：检测到 candidate 超宽时，先提交上一个
-        # 仍然合法的 current，再把当前字符放入下一行，不能把超宽字符塞回上一行。
+        width, _ = get_text_size(text)
+        if width <= max_width:
+            # SRT 条目允许作者手工换行。即使整段文本在宽度上不需要再次折行，
+            # 画布高度仍必须按现有行数计算，否则第二行及后续行会被裁掉。
+            line_count = text.count("\n") + 1
+            return text, line_count * line_height, line_count
+
+        def split_long_token(token):
+            # 当一个 token 本身就超宽时（常见于中文无空格长句，或英文超长单词），
+            # 退化为字符级拆分。关键点是：检测到 candidate 超宽时，先提交上一个
+            # 仍然合法的 current，再把当前字符放入下一行，不能把超宽字符塞回上一行。
+            lines = []
+            current = ""
+            for char in token:
+                candidate = f"{current}{char}"
+                candidate_width, _ = get_text_size(candidate)
+                if candidate_width <= max_width or not current:
+                    current = candidate
+                    continue
+                lines.append(current)
+                current = char
+            if current:
+                lines.append(current)
+            return lines
+
         lines = []
         current = ""
-        for char in token:
-            candidate = f"{current}{char}"
+        words = text.split(" ")
+        for word in words:
+            candidate = f"{current} {word}".strip() if current else word
             candidate_width, _ = get_text_size(candidate)
-            if candidate_width <= max_width or not current:
+            if candidate_width <= max_width:
                 current = candidate
                 continue
-            lines.append(current)
-            current = char
-        if current:
-            lines.append(current)
-        return lines
 
-    lines = []
-    current = ""
-    words = text.split(" ")
-    for word in words:
-        candidate = f"{current} {word}".strip() if current else word
-        candidate_width, _ = get_text_size(candidate)
-        if candidate_width <= max_width:
-            current = candidate
-            continue
+            if current:
+                lines.append(current)
+
+            word_width, _ = get_text_size(word)
+            if word_width <= max_width:
+                current = word
+            else:
+                lines.extend(split_long_token(word))
+                current = ""
 
         if current:
             lines.append(current)
 
-        word_width, _ = get_text_size(word)
-        if word_width <= max_width:
-            current = word
-        else:
-            lines.extend(split_long_token(word))
-            current = ""
+        line_start_punctuation = "，。！？；：、,.!?;:)]}）】》」』”’"
+        for index in range(1, len(lines)):
+            # 中文长句按字符拆分时，最后一个句号、逗号等闭合标点可能被单独
+            # 放到下一行，导致字幕背景被异常撑高，视觉上像一个小点掉在正文
+            # 下方。这里在不重新设计换行算法的前提下，把上一行最后一个字
+            # 移到标点行前面，让标点跟随文字显示，兼容中英文常见闭合标点。
+            if not lines[index] or lines[index][0] not in line_start_punctuation:
+                continue
+            if len(lines[index - 1]) <= 1:
+                continue
 
-    if current:
-        lines.append(current)
+            candidate = f"{lines[index - 1][-1]}{lines[index]}"
+            candidate_width, _ = get_text_size(candidate)
+            if candidate_width <= max_width:
+                lines[index] = candidate
+                lines[index - 1] = lines[index - 1][:-1]
 
-    line_start_punctuation = "，。！？；：、,.!?;:)]}）】》」』”’"
-    for index in range(1, len(lines)):
-        # 中文长句按字符拆分时，最后一个句号、逗号等闭合标点可能被单独
-        # 放到下一行，导致字幕背景被异常撑高，视觉上像一个小点掉在正文
-        # 下方。这里在不重新设计换行算法的前提下，把上一行最后一个字
-        # 移到标点行前面，让标点跟随文字显示，兼容中英文常见闭合标点。
-        if not lines[index] or lines[index][0] not in line_start_punctuation:
-            continue
-        if len(lines[index - 1]) <= 1:
-            continue
+        result = "\n".join(line.strip() for line in lines if line.strip()).strip()
+        # 高度以最终结果为准。原文本中的显式换行可能保留在某个 token 内，
+        # 此时临时 lines 列表的长度不等于 MoviePy 实际渲染的行数。
+        line_count = result.count("\n") + 1
+        height = line_count * line_height
+        return result, height, line_count
 
-        candidate = f"{lines[index - 1][-1]}{lines[index]}"
-        candidate_width, _ = get_text_size(candidate)
-        if candidate_width <= max_width:
-            lines[index] = candidate
-            lines[index - 1] = lines[index - 1][:-1]
+    fontsize = int(fontsize)
+    result, height, line_count = _wrap_once(fontsize)
 
-    result = "\n".join(line.strip() for line in lines if line.strip()).strip()
-    # 高度以最终结果为准。原文本中的显式换行可能保留在某个 token 内，
-    # 此时临时 lines 列表的长度不等于 MoviePy 实际渲染的行数。
-    height = (result.count("\n") + 1) * line_height
-    return result, height
+    if max_lines is not None:
+        # 字幕现在是短语级（每条最多 4 个词/22 个字符），正常情况下一行就能
+        # 放下；超过 max_lines 通常只发生在合并短片段或超长单词/无空格语言
+        # 密集字符时。优先缩小字号让它回到 max_lines 以内，而不是任由文字
+        # 溢出画面或裁切内容；缩到下限仍超出时接受当前结果，不无限缩小。
+        min_fontsize = max(1, int(fontsize * min_fontsize_ratio))
+        while line_count > max_lines and fontsize > min_fontsize:
+            fontsize = max(min_fontsize, fontsize - 2)
+            result, height, line_count = _wrap_once(fontsize)
+
+    return result, height, fontsize
 
 
 def _hex_to_rgb(color: str) -> tuple[int, int, int]:
@@ -1050,6 +1073,31 @@ def subtitle_font_supports_text(font_path: str, text: str) -> bool:
     return _subtitle_font_supports_sample(font_path, sample)
 
 
+def _apply_caption_case(text: str, params: VideoParams) -> str:
+    """
+    应用字幕大小写模式。
+
+    `subtitle_uppercase` 是历史参数，显式设置为 True 时必须保持原有的
+    全大写行为不变；否则按新的 `caption_case` 处理（默认 "sentence"，
+    只把每条短语字幕的首字母大写，不再要求整段脚本原样大写或不变）。
+    """
+    if getattr(params, "subtitle_uppercase", False):
+        return text.upper()
+
+    case_mode = getattr(params, "caption_case", None) or "sentence"
+    if case_mode == "upper":
+        return text.upper()
+    if case_mode == "original":
+        return text
+
+    # sentence: 只大写第一个字母字符，其余原样保留（短语可能不是原脚本
+    # 的句首，因此不能整句转小写，只补上开头大写即可）。
+    for index, char in enumerate(text):
+        if char.isalpha():
+            return text[:index] + char.upper() + text[index + 1 :]
+    return text
+
+
 def generate_video(
     video_path: str,
     audio_path: str,
@@ -1067,6 +1115,12 @@ def generate_video(
     """
     aspect = VideoAspect(params.video_aspect)
     video_width, video_height = aspect.to_resolution()
+    # font_size=None means "auto": ~5% of frame height instead of a fixed
+    # pixel size, so captions stay legible across 9:16/16:9/1:1 outputs.
+    # An explicit params.font_size (CLI/WebUI/config.toml) always wins.
+    effective_font_size = (
+        int(params.font_size) if params.font_size else round(video_height * 0.05)
+    )
 
     logger.info(f"generating video: {video_width} x {video_height}")
     logger.info(f"  ① video: {video_path}")
@@ -1098,10 +1152,14 @@ def generate_video(
         return params.text_background_color
 
     def create_text_clip(subtitle_item):
-        params.font_size = int(params.font_size)
-        params.stroke_width = int(params.stroke_width)
-        phrase = subtitle_item[1]
-        max_width = video_width * 0.9
+        # 每条短语字幕可能因为 max_lines 收缩而使用不同字号，因此这里必须
+        # 用局部变量而不是复用/改写共享的 params 对象，避免一条字幕的收缩
+        # 结果污染后续字幕的字号。
+        stroke_width = int(params.stroke_width)
+        phrase = _apply_caption_case(subtitle_item[1], params)
+        # 85% 而不是之前的 90%：给两侧留出更明显的安全边距，匹配主流短
+        # 视频平台的字幕排版惯例。
+        max_width = video_width * 0.85
         bg_color = resolve_subtitle_background_color()
         rounded_bg_enabled = bool(
             getattr(params, "rounded_subtitle_background", False) and bg_color
@@ -1110,29 +1168,30 @@ def generate_video(
         # 圆角背景按文字真实宽度生成，左右留白应更克制；旧矩形背景仍保留
         # 较大的安全边距，避免历史配置中的长字幕贴边或被裁切。
         padding_ratio = 0.4 if rounded_bg_enabled else 0.6
-        pad_x = int(params.font_size * padding_ratio) if has_subtitle_background else 0
+        pad_x = int(effective_font_size * padding_ratio) if has_subtitle_background else 0
         # 字幕背景需要给文字左右留出明确内边距。先从可用宽度中扣除
-        # padding 再换行，避免长英文或大字号刚好撑满 90% 视频宽度后，
+        # padding 再换行，避免长英文或大字号刚好撑满可用视频宽度后，
         # 文字贴到背景框边缘，看起来像被裁切。普通矩形背景和圆角背景
         # 都走这条逻辑；无背景字幕则保持原有最大宽度。
         text_max_width = max(1, int(max_width) - 2 * pad_x)
-        wrapped_txt, txt_height = wrap_text(
+        # 字幕现在是短语级的（最多 4 个词/22 个字符），正常情况下一行就够；
+        # max_lines=2 是硬上限的安全网，只在合并短片段等极端情况下触发收缩。
+        wrapped_txt, txt_height, font_size = wrap_text(
             phrase,
             max_width=text_max_width,
             font=font_path,
-            fontsize=params.font_size,
+            fontsize=effective_font_size,
+            max_lines=2,
         )
-        interline = int(params.font_size * 0.25)
+        interline = int(font_size * 0.25)
         line_count = wrapped_txt.count("\n") + 1
-        vertical_padding = int(params.font_size * 0.35)
+        vertical_padding = int(font_size * 0.35)
         # Pillow/MoviePy 会把描边向字形上下两侧扩张，并把这部分计入每一行
         # 的行进高度。若只在整个字幕块外增加一次描边留白，粗描边多行文本
         # 仍会逐行累积误差。这里按实际行数计入双侧描边空间，默认细描边只
         # 增加少量高度，而“小字号 + 粗描边 + 多行”也能完整显示。
-        stroke_padding = int(params.stroke_width * 2 * line_count)
-        text_clip_margin_y = max(
-            int(params.font_size * 0.3), int(params.stroke_width * 2)
-        )
+        stroke_padding = int(stroke_width * 2 * line_count)
+        text_clip_margin_y = max(int(font_size * 0.3), int(stroke_width * 2))
         # MoviePy 在 `method=label` 下会自动收缩文本框高度，遇到多行字幕、
         # 描边或背景色时，容易把最后一行的下半部分裁掉。这里显式传入
         # 一个更保守的高度，把行间距和额外上下留白一并算进去，保证字幕
@@ -1148,7 +1207,7 @@ def generate_video(
             # 圆角背景需要贴合文字宽度，而不是沿用 90% 视频宽度。这里先用
             # PIL 测量最长一行文字，再加水平内边距，避免短字幕出现过宽底板。
             try:
-                font = ImageFont.truetype(font_path, params.font_size)
+                font = ImageFont.truetype(font_path, font_size)
                 text_w = max(
                     int(font.getbbox(line)[2] - font.getbbox(line)[0])
                     for line in wrapped_txt.split("\n")
@@ -1160,15 +1219,15 @@ def generate_video(
                 text_w = int(max_width)
 
             box_w = max(1, min(int(max_width), text_w + 2 * pad_x))
-            radius = max(8, int(params.font_size * 0.4))
+            radius = max(8, int(font_size * 0.4))
             text_clip = TextClip(
                 text=wrapped_txt,
                 font=font_path,
-                font_size=params.font_size,
+                font_size=font_size,
                 color=params.text_fore_color,
                 bg_color=None,
                 stroke_color=params.stroke_color,
-                stroke_width=params.stroke_width,
+                stroke_width=stroke_width,
                 interline=interline,
                 size=(box_w, None),
                 text_align="center",
@@ -1195,11 +1254,11 @@ def generate_video(
             text_clip = TextClip(
                 text=wrapped_txt,
                 font=font_path,
-                font_size=params.font_size,
+                font_size=font_size,
                 color=params.text_fore_color,
                 bg_color=None,
                 stroke_color=params.stroke_color,
-                stroke_width=params.stroke_width,
+                stroke_width=stroke_width,
                 interline=interline,
                 size=(int(max_width), None),
                 text_align="center",
@@ -1226,11 +1285,11 @@ def generate_video(
             _clip = TextClip(
                 text=wrapped_txt,
                 font=font_path,
-                font_size=params.font_size,
+                font_size=font_size,
                 color=params.text_fore_color,
                 bg_color=None,
                 stroke_color=params.stroke_color,
-                stroke_width=params.stroke_width,
+                stroke_width=stroke_width,
                 interline=interline,
                 size=size,
                 text_align="center",
@@ -1239,8 +1298,20 @@ def generate_video(
         _clip = _clip.with_start(subtitle_item[0][0])
         _clip = _clip.with_end(subtitle_item[0][1])
         _clip = _clip.with_duration(duration)
+        # Cross-fading the mask (not the clip itself) fades opacity smoothly
+        # against whatever's behind it; fading the clip's own RGB would fade
+        # the text to black instead of to transparent.
+        fade_duration = min(0.15, duration / 3)
+        if fade_duration > 0:
+            _clip = _clip.with_effects(
+                [vfx.CrossFadeIn(fade_duration), vfx.CrossFadeOut(fade_duration)]
+            )
         if params.subtitle_position == "bottom":
             _clip = _clip.with_position(("center", video_height * 0.95 - _clip.h))
+        elif params.subtitle_position == "safe_bottom":
+            # 字幕块底边落在 78% 处，比 "bottom" 更靠上，避开短视频平台
+            # 常见的底部 UI（点赞/分享/评论按钮）遮挡区域。
+            _clip = _clip.with_position(("center", video_height * 0.78 - _clip.h))
         elif params.subtitle_position == "top":
             _clip = _clip.with_position(("center", video_height * 0.05))
         elif params.subtitle_position == "custom":
@@ -1274,7 +1345,7 @@ def generate_video(
             return TextClip(
                 text=text,
                 font=font_path,
-                font_size=params.font_size,
+                font_size=effective_font_size,
             )
 
         if subtitle_path and os.path.exists(subtitle_path):

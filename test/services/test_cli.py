@@ -1388,7 +1388,7 @@ class TestCliUiDefaults(unittest.TestCase):
 
         self.assertEqual(params.font_name, "STHeitiMedium.ttc")
         self.assertEqual(params.text_fore_color, "#FFFFFF")
-        self.assertEqual(params.font_size, 60)
+        self.assertIsNone(params.font_size)
         self.assertFalse(params.text_background_color)
         self.assertFalse(params.rounded_subtitle_background)
 
@@ -1423,7 +1423,7 @@ class TestCliUiDefaults(unittest.TestCase):
         with patch.dict(app_config.ui, ui_config, clear=True):
             params = cli.build_video_params(args)
 
-        self.assertEqual(params.font_size, 60)
+        self.assertIsNone(params.font_size)
         self.assertEqual(params.text_fore_color, "#FFFFFF")
         self.assertEqual(params.font_name, "STHeitiMedium.ttc")
         self.assertEqual(params.voice_name, "zh-CN-XiaoxiaoNeural-Female")
@@ -1646,7 +1646,7 @@ class TestCliUiDefaults(unittest.TestCase):
         self.assertEqual(params.voice_rate, 1.0)
         self.assertEqual(params.stroke_color, "#000000")
         self.assertEqual(params.stroke_width, 1.5)
-        self.assertEqual(params.font_size, 60)
+        self.assertIsNone(params.font_size)
 
     def test_stop_at_subtitle_overrides_saved_subtitle_disabled(self):
         """
@@ -1703,7 +1703,7 @@ class TestCliUiDefaults(unittest.TestCase):
         with patch.dict(app_config.ui, ui_config, clear=True):
             params = cli.build_video_params(args)
 
-        self.assertEqual(params.subtitle_position, "bottom")
+        self.assertEqual(params.subtitle_position, "safe_bottom")
         self.assertEqual(params.custom_position, 70.0)
 
     def test_invalid_saved_background_color_with_saved_enable_flag(self):

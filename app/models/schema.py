@@ -120,15 +120,24 @@ class VideoParams(BaseModel):
 
     subtitle_enabled: Optional[bool] = True
     subtitle_position: Optional[str] = config.ui.get(
-        "subtitle_position", "bottom"
-    )  # top, bottom, center, custom
+        "subtitle_position", "safe_bottom"
+    )  # top, bottom, safe_bottom, center, custom
     custom_position: float = config.ui.get("custom_position", 70.0)
+    subtitle_uppercase: bool = False
+    # "sentence" (capitalize the first letter of each caption, default),
+    # "upper" (legacy ALL CAPS look, same as subtitle_uppercase=True),
+    # "original" (no transform — whatever casing the script/TTS produced).
+    # subtitle_uppercase still wins when explicitly set, for old callers.
+    caption_case: str = "sentence"
     font_name: Optional[str] = "STHeitiMedium.ttc"
     text_fore_color: Optional[str] = "#FFFFFF"
     text_background_color: Union[bool, str] = False
     rounded_subtitle_background: bool = False
 
-    font_size: int = 60
+    # None means "auto": ~5% of frame height, computed in generate_video().
+    # An explicit value (CLI flag, WebUI, or config.toml [ui].font_size)
+    # still always wins — this is only the zero-config default.
+    font_size: Optional[int] = None
     stroke_color: Optional[str] = "#000000"
     stroke_width: float = 1.5
     n_threads: Optional[int] = 2

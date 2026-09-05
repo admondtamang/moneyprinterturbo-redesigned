@@ -26,6 +26,7 @@ from moviepy.audio.io.AudioFileClip import AudioFileClip
 from openai import OpenAI
 
 from app.config import config
+from app.services import subtitle_chunker
 from app.utils import utils
 
 _DEFAULT_EDGE_TTS_TIMEOUT_SECONDS = 30.0
@@ -1923,6 +1924,30 @@ def _build_subtitle_formatter():
     return formatter
 
 
+def _emit_chunked_subtitle_items(
+    words: list[subtitle_chunker.Word], existing_count: int, formatter
+) -> list[str]:
+    """
+    把一个已匹配脚本断句的词级时间轴，切分成短语级字幕条目。
+
+    这是 `create_subtitle()` 让 SRT 呈现短句而不是整句的落点：不论
+    时间轴来自 edge-tts 逐词 cue 还是按字符比例合成的伪词，都统一走
+    `subtitle_chunker.group_words_into_chunks()`，产出多条短字幕。
+    """
+    chunks = subtitle_chunker.group_words_into_chunks(words)
+    items = []
+    for offset, (start, end, text) in enumerate(chunks):
+        items.append(
+            formatter(
+                idx=existing_count + offset + 1,
+                start_time=int(round(start * 10000000)),
+                end_time=int(round(end * 10000000)),
+                sub_text=text,
+            )
+        )
+    return items
+
+
 # 阿拉伯语变音符号和 Tatweel 拉长符在 edge-tts 返回文本中可能出现，
 # 这些字符不影响语义，但会导致脚本文本和字幕 cue 字符串精确匹配失败。
 _ARABIC_DIACRITICS = re.compile("[\u0610-\u061A\u064B-\u065F\u0670\u0640\u06D6-\u06ED]")
@@ -2010,67 +2035,74 @@ def _write_subtitle_items(sub_items: list[str], subtitle_file: str) -> bool:
 
 def _build_subtitle_items_from_edge_cues(
     sub_maker: SubMaker, script_lines: list[str]
-) -> list[str]:
+) -> tuple[list[str], int]:
     """
-    将 edge_tts 7.x 的细粒度 `cues` 聚合为按脚本断句的 SRT 片段。
+    将 edge_tts 7.x 的细粒度 `cues` 聚合为按脚本断句校验、再切成短语的 SRT 片段。
 
     背景：
-    edge_tts 7.x 的 `SubMaker.get_srt()` 更偏向逐词/逐短语的时间轴。
-    对英文做逐词高亮尚可，但中文短视频字幕如果直接照搬，会出现
-    “金钱 / 是 / 一种 / 社会 / 工具” 这种阅读体验很差的效果。
+    edge_tts 7.x 的 `SubMaker.get_srt()` 更偏向逐词/逐短语的时间轴。直接
+    照搬会产生逐词字幕；但如果聚合成完整句子再显示，短视频字幕就会变成
+    一屏 5-6 行的长句。这里两头都要：先用整句匹配校验时间轴和脚本文本
+    对得上（复用原有的 `_match_script_line` 容错逻辑），再把这句话内已经
+    收集到的逐词 cue 时间轴交给 `subtitle_chunker` 切成短语级字幕，短语
+    时间轴仍然来自真实的逐词 cue，不是按字符比例估算的。
 
-    实现策略：
-    1. 逐个消费 cues 中的 `content`；
-    2. 累积成一段候选文本；
-    3. 当候选文本与脚本里当前目标断句匹配时，收敛为一个完整字幕段；
-    4. 使用第一条 cue 的开始时间和最后一条 cue 的结束时间，保证时间轴连续。
+    Returns:
+        (sub_items, matched_sentence_count) — matched_sentence_count 用于
+        沿用原有的“聚合是否覆盖了全部脚本断句”校验，因为现在一句脚本会
+        产出多条 sub_items，条目数量本身不再等于脚本断句数量。
     """
     formatter = _build_subtitle_formatter()
     sub_items = []
     sub_index = 0
     current_text = ""
-    current_start_time = None
+    current_words: list[subtitle_chunker.Word] = []
 
     for cue in sub_maker.cues:
         cue_text = unescape(cue.content)
-        if current_start_time is None:
-            current_start_time = int(cue.start.total_seconds() * 10000000)
-
-        current_end_time = int(cue.end.total_seconds() * 10000000)
+        cue_start_seconds = cue.start.total_seconds()
+        cue_end_seconds = cue.end.total_seconds()
         current_text += cue_text
+        stripped_word = cue_text.strip()
+        if stripped_word:
+            current_words.append(
+                subtitle_chunker.Word(stripped_word, cue_start_seconds, cue_end_seconds)
+            )
 
         matched_text = _match_script_line(script_lines, current_text, sub_index)
         if not matched_text:
             continue
 
         sub_index += 1
-        sub_items.append(
-            formatter(
-                idx=sub_index,
-                start_time=current_start_time,
-                end_time=current_end_time,
-                sub_text=matched_text,
-            )
-        )
+        words = subtitle_chunker.resolve_chunk_words(current_words, matched_text)
+        sub_items.extend(_emit_chunked_subtitle_items(words, len(sub_items), formatter))
         current_text = ""
-        current_start_time = None
+        current_words = []
 
     if current_text.strip():
         logger.warning(
             f"edge cues still have unmatched text after aggregation: {current_text}"
         )
 
-    return sub_items
+    return sub_items, sub_index
 
 
 def _build_subtitle_items_from_legacy_submaker(
     sub_maker: SubMaker, script_lines: list[str]
-) -> list[str]:
+) -> tuple[list[str], int]:
     """
-    将项目原有 `subs/offset` 结构聚合为按脚本断句的 SRT 片段。
+    将项目原有 `subs/offset` 结构聚合为按脚本断句校验、再切成短语的 SRT 片段。
 
-    这部分保留了原来的核心思路，只是拆成独立函数，便于与 edge_tts 7.x
-    的 cues 聚合逻辑共享同一套断句匹配与落盘流程。
+    这部分保留了原来的整句匹配核心思路（`subs/offset` 里没有真正的逐词
+    时间轴，这条路径覆盖 Gemini/SiliconFlow/ElevenLabs 等只能返回整句
+    时间轴的 TTS）。匹配到完整脚本断句后，用
+    `subtitle_chunker.distribute_proportionally()` 按字符数比例合成伪词
+    时间轴，再交给同一套 `subtitle_chunker.group_words_into_chunks()`
+    切成短语级字幕，行为与 edge cues 路径保持一致。
+
+    Returns:
+        (sub_items, matched_sentence_count)，含义同
+        `_build_subtitle_items_from_edge_cues`。
     """
     formatter = _build_subtitle_formatter()
     start_time = -1.0
@@ -2091,14 +2123,10 @@ def _build_subtitle_items_from_legacy_submaker(
             continue
 
         sub_index += 1
-        sub_items.append(
-            formatter(
-                idx=sub_index,
-                start_time=start_time,
-                end_time=current_end_time,
-                sub_text=matched_text,
-            )
+        words = subtitle_chunker.distribute_proportionally(
+            matched_text, start_time / 10000000, current_end_time / 10000000
         )
+        sub_items.extend(_emit_chunked_subtitle_items(words, len(sub_items), formatter))
         start_time = -1.0
         sub_line = ""
 
@@ -2107,7 +2135,7 @@ def _build_subtitle_items_from_legacy_submaker(
             f"legacy subtitle items still have unmatched text after aggregation: {sub_line}"
         )
 
-    return sub_items
+    return sub_items, sub_index
 
 
 def create_subtitle(sub_maker: SubMaker, text: str, subtitle_file: str):
@@ -2121,15 +2149,19 @@ def create_subtitle(sub_maker: SubMaker, text: str, subtitle_file: str):
     script_lines = utils.split_string_by_punctuations(text)
     try:
         if hasattr(sub_maker, "cues") and sub_maker.cues:
-            sub_items = _build_subtitle_items_from_edge_cues(sub_maker, script_lines)
+            sub_items, matched_count = _build_subtitle_items_from_edge_cues(
+                sub_maker, script_lines
+            )
         else:
-            sub_items = _build_subtitle_items_from_legacy_submaker(
+            sub_items, matched_count = _build_subtitle_items_from_legacy_submaker(
                 sub_maker, script_lines
             )
 
-        if len(sub_items) != len(script_lines):
+        # 短语级切分后一句脚本会产出多条 sub_items，条目数量不再等于脚本
+        # 断句数量；改用匹配到的脚本断句数量校验聚合是否覆盖了全部脚本。
+        if matched_count != len(script_lines):
             logger.warning(
-                f"failed, sub_items len: {len(sub_items)}, script_lines len: {len(script_lines)}"
+                f"failed, matched sentences: {matched_count}, script_lines len: {len(script_lines)}"
             )
             return
 

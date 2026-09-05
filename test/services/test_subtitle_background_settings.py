@@ -153,7 +153,7 @@ class TestSubtitleBackgroundSettings(unittest.TestCase):
             / "MicrosoftYaHeiBold.ttc"
         )
 
-        wrapped_text, _ = video.wrap_text(
+        wrapped_text, _, _ = video.wrap_text(
             "如果你调整字号，中文笔画也不能被黑色背景遮挡。",
             max_width=1642,
             font=str(font_path),

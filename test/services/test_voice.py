@@ -16,6 +16,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
 from app.utils import utils
 from app.services import voice as vs
+from app.services import subtitle as subtitle_service
 from app.services import task as task_service
 from pydub import AudioSegment
 
@@ -35,6 +36,21 @@ text_zh = """
 10-11日持续阴天有小雨，日温差小，气温在13-17℃之间，体感阴凉；
 12日天气短暂好转，早晚清凉；
 """
+
+def _joined_chunk_text(sub_items):
+    """Reconstruct the full caption text from short chunk-level SRT blocks.
+
+    ``_build_subtitle_items_from_edge_cues`` now returns several short
+    phrase chunks per matched script sentence instead of one block per
+    sentence, so tests that used to assert on a single ``sub_items[i]``
+    block need the chunk text stitched back together first.
+    """
+    texts = []
+    for item in sub_items:
+        lines = item.strip("\n").split("\n")
+        texts.append(lines[2])
+    return " ".join(texts)
+
 
 voice_rate=1.0
 voice_volume=1.0
@@ -1089,9 +1105,14 @@ class TestVoiceService(unittest.TestCase):
             self.assertTrue(subtitle_path.endswith("subtitle.srt"))
             self.assertTrue(Path(subtitle_path).exists())
             self.assertFalse(whisper_create.called)
-            subtitle_content = Path(subtitle_path).read_text(encoding="utf-8")
-            self.assertIn("Gemini subtitle generation should work now", subtitle_content)
-            self.assertIn("Testing multiple lines", subtitle_content)
+            # Chunking now splits each sentence into several short phrase
+            # entries, so the full sentence no longer appears verbatim on
+            # one SRT line — reconstruct it from the parsed entries instead.
+            joined_text = " ".join(
+                text for _, _, text in subtitle_service.file_to_subtitles(subtitle_path)
+            )
+            self.assertIn("Gemini subtitle generation should work now", joined_text)
+            self.assertIn("Testing multiple lines", joined_text)
 
     def test_script_split_keeps_thousand_separator_comma(self):
         """
@@ -1142,10 +1163,12 @@ class TestVoiceService(unittest.TestCase):
             )
         sub_maker = SimpleNamespace(cues=cues)
 
-        sub_items = vs._build_subtitle_items_from_edge_cues(sub_maker, script_lines)
+        sub_items, matched_count = vs._build_subtitle_items_from_edge_cues(
+            sub_maker, script_lines
+        )
 
-        self.assertEqual(len(sub_items), len(script_lines))
-        self.assertIn("1,000 years", sub_items[-1])
+        self.assertEqual(matched_count, len(script_lines))
+        self.assertIn("1,000 years", _joined_chunk_text(sub_items))
 
     def test_script_split_supports_arabic_punctuation(self):
         """
@@ -1202,11 +1225,14 @@ class TestVoiceService(unittest.TestCase):
             ]
         )
 
-        sub_items = vs._build_subtitle_items_from_edge_cues(sub_maker, script_lines)
+        sub_items, matched_count = vs._build_subtitle_items_from_edge_cues(
+            sub_maker, script_lines
+        )
 
-        self.assertEqual(len(sub_items), len(script_lines))
-        self.assertIn("أهلاً وسهلاً بك في المدرسة", sub_items[0])
-        self.assertIn("شكراً لك", sub_items[-1])
+        self.assertEqual(matched_count, len(script_lines))
+        joined_text = _joined_chunk_text(sub_items)
+        self.assertIn("أهلاً وسهلاً بك في المدرسة", joined_text)
+        self.assertIn("شكراً لك", joined_text)
 
     def test_create_subtitle_ignores_markdown_separator_lines(self):
         """

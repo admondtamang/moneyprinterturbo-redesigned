@@ -1004,7 +1004,7 @@ class TestVideoService(unittest.TestCase):
             # test english text wrapping
             test_text_en = "This is a test text for wrapping long sentences in english language"
             
-            wrapped_text_en, text_height_en = vd.wrap_text(
+            wrapped_text_en, text_height_en, _ = vd.wrap_text(
                 text=test_text_en,
                 max_width=300,
                 font=font_path,
@@ -1016,7 +1016,7 @@ class TestVideoService(unittest.TestCase):
             
             # test chinese text wrapping
             test_text_zh = "这是一段用来测试中文长句换行的文本内容，应该会根据宽度限制进行换行处理"
-            wrapped_text_zh, text_height_zh = vd.wrap_text(
+            wrapped_text_zh, text_height_zh, _ = vd.wrap_text(
                 text=test_text_zh,
                 max_width=300,
                 font=font_path,
@@ -1055,7 +1055,7 @@ class TestVideoService(unittest.TestCase):
             expected_line_height = sum(font.getmetrics())
             for case_name, text in text_cases.items():
                 with self.subTest(font=font_path.name, case=case_name):
-                    wrapped_text, text_height = vd.wrap_text(
+                    wrapped_text, text_height, _ = vd.wrap_text(
                         text=text,
                         max_width=max_width,
                         font=str(font_path),
@@ -1079,7 +1079,7 @@ class TestVideoService(unittest.TestCase):
         text = "SAFE TEXT\nMORE SAFE"
         font = vd.ImageFont.truetype(font_path, font_size)
 
-        wrapped_text, text_height = vd.wrap_text(
+        wrapped_text, text_height, _ = vd.wrap_text(
             text=text,
             max_width=972,
             font=font_path,
@@ -1106,7 +1106,7 @@ class TestVideoService(unittest.TestCase):
 
         for font_path in font_paths:
             with self.subTest(font=font_path.name):
-                wrapped_text, text_height = vd.wrap_text(
+                wrapped_text, text_height, _ = vd.wrap_text(
                     text=text,
                     max_width=max_width,
                     font=str(font_path),
@@ -1198,7 +1198,7 @@ class TestVideoService(unittest.TestCase):
             font_path = os.path.join(utils.font_dir(), font_name)
             with self.subTest(language=language, font=font_name):
                 self.assertTrue(vd.subtitle_font_supports_text(font_path, text))
-                wrapped_text, text_height = vd.wrap_text(
+                wrapped_text, text_height, _ = vd.wrap_text(
                     text=text,
                     max_width=max_width,
                     font=font_path,

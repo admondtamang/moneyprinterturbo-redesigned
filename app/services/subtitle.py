@@ -10,6 +10,7 @@ except ImportError:
 from loguru import logger
 
 from app.config import config
+from app.services import subtitle_chunker
 from app.utils import utils
 
 model_size = config.whisper.get("model_size", "large-v3")
@@ -68,7 +69,7 @@ def create(audio_file, subtitle_file: str = ""):
     start = timer()
     subtitles = []
 
-    def recognized(seg_text, seg_start, seg_end):
+    def recognized(seg_text, seg_start, seg_end, seg_words):
         seg_text = seg_text.strip()
         if not seg_text:
             return
@@ -77,7 +78,12 @@ def create(audio_file, subtitle_file: str = ""):
         logger.debug(msg)
 
         subtitles.append(
-            {"msg": seg_text, "start_time": seg_start, "end_time": seg_end}
+            {
+                "msg": seg_text,
+                "start_time": seg_start,
+                "end_time": seg_end,
+                "words": seg_words,
+            }
         )
 
     for segment in segments:
@@ -87,6 +93,7 @@ def create(audio_file, subtitle_file: str = ""):
         seg_start = 0
         seg_end = 0
         seg_text = ""
+        seg_words = []
 
         if segment.words:
             is_segmented = False
@@ -98,17 +105,35 @@ def create(audio_file, subtitle_file: str = ""):
                 seg_end = word.end
                 # If it contains punctuation, then break the sentence.
                 seg_text += word.word
+                stripped_word = word.word.strip()
+                if stripped_word:
+                    seg_words.append(
+                        subtitle_chunker.Word(stripped_word, word.start, word.end)
+                    )
 
                 if utils.str_contains_punctuation(word.word):
                     # remove last char
                     seg_text = seg_text[:-1]
+                    if seg_words:
+                        # Keep the per-word chunking timeline in sync with the
+                        # trailing-punctuation strip above, otherwise the
+                        # dropped character reappears once chunks are joined.
+                        last = seg_words[-1]
+                        trimmed_text = last.text[:-1]
+                        if trimmed_text:
+                            seg_words[-1] = subtitle_chunker.Word(
+                                trimmed_text, last.start, last.end
+                            )
+                        else:
+                            seg_words.pop()
                     if not seg_text:
                         continue
 
-                    recognized(seg_text, seg_start, seg_end)
+                    recognized(seg_text, seg_start, seg_end, seg_words)
 
                     is_segmented = False
                     seg_text = ""
+                    seg_words = []
 
                 if words_idx == 0 and segment.start < word.start:
                     seg_start = word.start
@@ -119,7 +144,7 @@ def create(audio_file, subtitle_file: str = ""):
         if not seg_text:
             continue
 
-        recognized(seg_text, seg_start, seg_end)
+        recognized(seg_text, seg_start, seg_end, seg_words)
 
     end = timer()
 
@@ -130,12 +155,17 @@ def create(audio_file, subtitle_file: str = ""):
     lines = []
     for subtitle in subtitles:
         text = subtitle.get("msg")
-        if text:
-            lines.append(
-                utils.text_to_srt(
-                    idx, text, subtitle.get("start_time"), subtitle.get("end_time")
-                )
-            )
+        if not text:
+            continue
+
+        chunks = subtitle_chunker.group_words_into_chunks(subtitle.get("words") or [])
+        if not chunks:
+            # 极少数情况下这句话没有可用的逐词时间轴（例如 Whisper 没有
+            # 返回 word_timestamps），退化为整句一条字幕，不丢字幕内容。
+            chunks = [(subtitle.get("start_time"), subtitle.get("end_time"), text)]
+
+        for start, end, chunk_text in chunks:
+            lines.append(utils.text_to_srt(idx, chunk_text, start, end))
             idx += 1
 
     sub = "\n".join(lines) + "\n"
@@ -199,6 +229,52 @@ def similarity(a, b):
     return 1 - (distance / max_length)
 
 
+def _parse_srt_timestamp(ts: str) -> float:
+    hours, minutes, rest = ts.strip().split(":")
+    seconds, millis = rest.split(",")
+    return int(hours) * 3600 + int(minutes) * 60 + int(seconds) + int(millis) / 1000.0
+
+
+def _format_srt_timestamp(seconds: float) -> str:
+    seconds = max(0.0, seconds)
+    hours = int(seconds // 3600)
+    minutes = int((seconds % 3600) // 60)
+    secs = seconds % 60
+    return f"{hours:02d}:{minutes:02d}:{secs:06.3f}".replace(".", ",")
+
+
+def _chunk_script_line_into_srt_entries(
+    script_line: str, start_time_str: str, end_time_str: str, existing_count: int
+) -> list[tuple[int, str, str]]:
+    """
+    把一条已经和字幕时间轴对上的完整脚本断句，重新切成短语级 SRT 条目。
+
+    `correct()` 匹配/合并的最小单位是整句，但字幕本身现在是短语级的。
+    这里按字符数比例把整句时长重新分配给短语（复用
+    `subtitle_chunker.distribute_proportionally`），避免修正后的句子
+    又变回一屏一大段的整句字幕。
+    """
+    start_seconds = _parse_srt_timestamp(start_time_str)
+    end_seconds = _parse_srt_timestamp(end_time_str)
+    words = subtitle_chunker.distribute_proportionally(
+        script_line, start_seconds, end_seconds
+    )
+    chunks = subtitle_chunker.group_words_into_chunks(words) if words else []
+    if not chunks:
+        chunks = [(start_seconds, end_seconds, script_line)]
+
+    entries = []
+    for offset, (start, end, text) in enumerate(chunks):
+        entries.append(
+            (
+                existing_count + offset + 1,
+                f"{_format_srt_timestamp(start)} --> {_format_srt_timestamp(end)}",
+                text,
+            )
+        )
+    return entries
+
+
 def correct(subtitle_file, video_script):
     subtitle_items = file_to_subtitles(subtitle_file)
     normalized_script = utils.normalize_script_for_subtitle_matching(video_script)
@@ -238,26 +314,16 @@ def correct(subtitle_file, video_script):
                 logger.warning(
                     f"Merged/Corrected - Script: {script_line}, Subtitle: {combined_subtitle}"
                 )
-                new_subtitle_items.append(
-                    (
-                        len(new_subtitle_items) + 1,
-                        f"{start_time} --> {end_time}",
-                        script_line,
-                    )
-                )
-                corrected = True
             else:
                 logger.warning(
                     f"Mismatch - Script: {script_line}, Subtitle: {combined_subtitle}"
                 )
-                new_subtitle_items.append(
-                    (
-                        len(new_subtitle_items) + 1,
-                        f"{start_time} --> {end_time}",
-                        script_line,
-                    )
+            new_subtitle_items.extend(
+                _chunk_script_line_into_srt_entries(
+                    script_line, start_time, end_time, len(new_subtitle_items)
                 )
-                corrected = True
+            )
+            corrected = True
 
             script_index += 1
             subtitle_index = next_subtitle_index
@@ -266,22 +332,15 @@ def correct(subtitle_file, video_script):
     while script_index < len(script_lines):
         logger.warning(f"Extra script line: {script_lines[script_index]}")
         if subtitle_index < len(subtitle_items):
-            new_subtitle_items.append(
-                (
-                    len(new_subtitle_items) + 1,
-                    subtitle_items[subtitle_index][1],
-                    script_lines[script_index],
-                )
-            )
+            start_time, end_time = subtitle_items[subtitle_index][1].split(" --> ")
             subtitle_index += 1
         else:
-            new_subtitle_items.append(
-                (
-                    len(new_subtitle_items) + 1,
-                    "00:00:00,000 --> 00:00:00,000",
-                    script_lines[script_index],
-                )
+            start_time, end_time = "00:00:00,000", "00:00:00,000"
+        new_subtitle_items.extend(
+            _chunk_script_line_into_srt_entries(
+                script_lines[script_index], start_time, end_time, len(new_subtitle_items)
             )
+        )
         script_index += 1
         corrected = True
 

@@ -90,7 +90,17 @@ class UploadPostService:
                     for tag in youtube_extra.get("tags", []):
                         data.append(('tags[]', tag))
                     data.append(('privacyStatus', youtube_extra.get("privacyStatus", "public")))
-                    data.append(('containsSyntheticMedia', "true"))
+                    # Default True (safe default for AI-narrated/AI-scripted content).
+                    # YouTube's own disclosure policy exempts generic TTS voiceover
+                    # over real, unaltered footage — callers can opt out per-upload
+                    # via youtube_extra["contains_synthetic_media"] when that applies.
+                    contains_synthetic_media = youtube_extra.get(
+                        "contains_synthetic_media", True
+                    )
+                    data.append((
+                        'containsSyntheticMedia',
+                        "true" if contains_synthetic_media else "false",
+                    ))
 
                 headers = {'Authorization': f'Apikey {self.api_key}'}
 

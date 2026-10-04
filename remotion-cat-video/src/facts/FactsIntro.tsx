@@ -10,8 +10,18 @@ import { palette } from "./palette";
 import { serif, sans } from "./fonts";
 import { Cat } from "../Cat";
 
-export const FactsIntro: React.FC<{ durationInFrames?: number }> = ({
+export const FactsIntro: React.FC<{
+  durationInFrames?: number;
+  kicker?: string;
+  title?: string;
+  subtitle?: string;
+  audioSrc?: string;
+}> = ({
   durationInFrames = 75,
+  kicker = "Whiskers Studio Presents",
+  title = "5 Cat Facts You Didn't Know",
+  subtitle = "Surprising science, one paw at a time",
+  audioSrc = "voiceover/five-cat-facts/intro.mp3",
 }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
@@ -35,7 +45,7 @@ export const FactsIntro: React.FC<{ durationInFrames?: number }> = ({
       }}
     >
       <Audio
-        src={staticFile("voiceover/five-cat-facts/intro.mp3")}
+        src={staticFile(audioSrc)}
         volume={(f) =>
           interpolate(
             f,
@@ -68,7 +78,7 @@ export const FactsIntro: React.FC<{ durationInFrames?: number }> = ({
           }),
         }}
       >
-        Whiskers Studio Presents
+        {kicker}
       </div>
 
       <div
@@ -106,7 +116,7 @@ export const FactsIntro: React.FC<{ durationInFrames?: number }> = ({
           )}px`,
         }}
       >
-        5 Cat Facts You Didn't Know
+        {title}
       </div>
 
       <div
@@ -122,7 +132,7 @@ export const FactsIntro: React.FC<{ durationInFrames?: number }> = ({
           }),
         }}
       >
-        Surprising science, one paw at a time
+        {subtitle}
       </div>
 
       <div

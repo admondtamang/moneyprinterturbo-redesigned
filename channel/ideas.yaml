@@ -1,0 +1,90 @@
+# Content queue. produce.py takes the first entry with used: false, then sets used: true.
+# ADD YOUR OWN — just append entries in this shape. Order = publish order.
+#
+# Format rules enforced from the data (PLAYBOOK.md §2):
+#   title:  curiosity/vibe hook + 1-2 emoji. NOT "5 Facts About X" — numbered lists underperform.
+#   script: exactly `sentences` short self-contained lines, ~13-15 words each, ending on a payoff.
+#   terms:  one Pexels search phrase per sentence, in order. Short literal 2-4 word action phrases.
+#   prompt: the comment-bait question that closes the description.
+
+- id: 2026-10-03-loaf
+  used: true
+  title: "Your cat sits like bread for a reason 🍞😺"
+  script:
+    - "When a cat tucks every paw underneath itself, that shape has a name - the loaf."
+    - "A loafing cat is warm, relaxed, and telling you it feels safe enough to stop guarding its feet."
+    - "If the paws come back out fast, something in the room just stopped feeling safe."
+  terms: ["cat loaf sitting", "cat relaxed sofa", "cat alert ears"]
+  prompt: "Does your cat loaf? Post a photo in the comments."
+
+- id: 2026-10-04-chirp
+  used: true
+  title: "That weird noise your cat makes at birds 🐦😾"
+  script:
+    - "That stuttering chatter your cat makes at a window is not excitement, it is frustration."
+    - "The jaw motion mimics the killing bite cats use, firing with no prey to land on."
+    - "Your cat is running the hunt in its head and losing every single time."
+  terms: ["cat window birds", "cat chattering closeup", "cat watching outside"]
+  prompt: "Has your cat ever chattered at you? What set it off?"
+
+- id: 2026-10-05-slowblink
+  used: false
+  title: "Blink slowly at your cat. Watch what happens 👁️😺"
+  script:
+    - "A slow blink from a cat is the closest thing they have to saying they trust you."
+    - "Closing your eyes near another animal means you trust it enough to stop watching it."
+    - "Try blinking slowly at your cat tonight, and most of them will blink it right back."
+  terms: ["cat slow blink", "cat eyes closeup", "person petting cat"]
+  prompt: "Did your cat blink back? Tell me what happened."
+
+- id: 2026-10-06-sugar
+  used: false
+  title: "Your cat has never tasted anything sweet 🍰🚫"
+  script:
+    - "Cats carry a broken version of the gene that builds sweet taste receptors."
+    - "Cake, ice cream, honey - a cat tastes texture and fat, never the sugar itself."
+    - "Every cat that ever begged for your dessert was lying about why."
+  terms: ["cat licking food", "cat kitchen counter", "cat begging table"]
+  prompt: "What food does your cat beg for that makes no sense?"
+
+- id: 2026-10-07-kneading
+  used: false
+  title: "Why your cat makes biscuits on you 🫓😻"
+  script:
+    - "Kneading is a reflex kittens use to start milk flowing from their mother."
+    - "Adult cats keep doing it on soft things that feel safe - including you."
+    - "Being kneaded means your cat filed you under mother, not roommate."
+  terms: ["cat kneading blanket", "cat on lap", "cat purring closeup"]
+  prompt: "Where does your cat knead? Lap, blanket, or your face at 4am?"
+
+# ---------------------------------------------------------------------------
+# A/B TEST — broader-appeal hypothesis (PLAYBOOK §5b)
+# Evidence: nJ8MV34vg_0, the channel's ONLY non-cat upload (Minecraft compilation),
+# got 11,293 views — more than every cat fact video ever posted.
+# Hypothesis: the audience is short-form-comedy, not cat-specific.
+# Evidence strength: WEAK — n=1, and it was also a compilation from the launch window,
+# so content-type/era confounds are unresolved. This is a cheap test, not a conclusion.
+# Brand risk: the channel is "thecatcourt". Too much non-cat content may confuse the
+# algorithm's topic association and the inherited subscriber base. Cap at 2 of every 7.
+# Same format as the cat ideas: original script, licensed footage, 18-25s.
+# ---------------------------------------------------------------------------
+
+- id: 2026-10-08-owl-head
+  used: false
+  title: "An owl cannot move its eyes. At all. 🦉👀"
+  script:
+    - "An owl's eyes are not balls, they are tubes locked into the skull and cannot swivel."
+    - "To compensate, it got fourteen neck bones, double what you have, and spins its head instead."
+    - "That creepy head turn is not a trick, it is the only way an owl can look sideways."
+  terms: ["owl turning head", "owl closeup eyes", "owl perched branch"]
+  prompt: "What animal fact still sounds fake to you?"
+
+- id: 2026-10-09-dog-nose
+  used: false
+  title: "Your dog's nose print is like a fingerprint 🐕👃"
+  script:
+    - "No two dogs share the same pattern of ridges and creases on their nose."
+    - "Some kennel clubs have accepted nose prints as proof of identity for decades."
+    - "Your dog has been carrying unique ID on its face this whole time."
+  terms: ["dog nose closeup", "dog face closeup", "dog looking camera"]
+  prompt: "Cat people or dog people — which side are you on?"

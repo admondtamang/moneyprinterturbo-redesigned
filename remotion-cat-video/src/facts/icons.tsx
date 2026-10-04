@@ -92,3 +92,68 @@ export const EarRotateIcon: React.FC<{ progress: number }> = ({
     />
   </svg>
 );
+
+// Myth 1: the righting reflex doesn't guarantee a safe landing - a rotation arrow.
+export const RotateArrowIcon: React.FC<{ progress: number }> = ({
+  progress,
+}) => (
+  <svg width={180} height={180} viewBox="0 0 200 200">
+    <path
+      d="M150 60 A70 70 0 1 0 165 115"
+      {...strokeProps}
+      {...draw(progress)}
+    />
+    <path d="M150 60 L172 53 M150 60 L157 82" {...strokeProps} {...draw(progress)} />
+  </svg>
+);
+
+// Myth 2: purring isn't always happiness - concentric sound waves.
+export const SoundWaveIcon: React.FC<{ progress: number }> = ({
+  progress,
+}) => (
+  <svg width={180} height={180} viewBox="0 0 200 200">
+    <circle cx={65} cy={100} r={9} {...strokeProps} {...draw(progress)} />
+    <path d="M92 72 A38 38 0 0 1 92 128" {...strokeProps} {...draw(progress)} />
+    <path d="M118 55 A62 62 0 0 1 118 145" {...strokeProps} {...draw(progress)} />
+    <path d="M144 40 A85 85 0 0 1 144 160" {...strokeProps} {...draw(progress)} />
+  </svg>
+);
+
+// Myth 3: cats form real bonds, they aren't loners - a heart.
+export const BondHeartIcon: React.FC<{ progress: number }> = ({
+  progress,
+}) => (
+  <svg width={180} height={180} viewBox="0 0 200 200">
+    <path
+      d="M100 158 C42 118 30 76 62 55 C82 42 100 55 100 76 C100 55 118 42 138 55 C170 76 158 118 100 158 Z"
+      {...strokeProps}
+      {...draw(progress)}
+    />
+  </svg>
+);
+
+// Myth 4: most adult cats can't digest milk - a crossed-out glass.
+export const NoMilkIcon: React.FC<{ progress: number }> = ({ progress }) => (
+  <svg width={180} height={180} viewBox="0 0 200 200">
+    <path
+      d="M70 55 H130 L120 150 H80 Z"
+      {...strokeProps}
+      {...draw(progress)}
+    />
+    <line x1={73} y1={92} x2={127} y2={92} {...strokeProps} {...draw(progress)} />
+    <line x1={45} y1={155} x2={155} y2={45} {...strokeProps} {...draw(progress)} />
+  </svg>
+);
+
+// Myth 5: meowing at adults is a behavior cats developed for humans - a speech bubble.
+export const SpeechBubbleIcon: React.FC<{ progress: number }> = ({
+  progress,
+}) => (
+  <svg width={180} height={180} viewBox="0 0 200 200">
+    <path
+      d="M40 60 H160 A10 10 0 0 1 170 70 V130 A10 10 0 0 1 160 140 H90 L60 165 V140 H40 A10 10 0 0 1 30 130 V70 A10 10 0 0 1 40 60 Z"
+      {...strokeProps}
+      {...draw(progress)}
+    />
+  </svg>
+);

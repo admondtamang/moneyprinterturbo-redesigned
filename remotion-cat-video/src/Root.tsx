@@ -6,10 +6,14 @@ import { CatScene } from "./scenes/CatScene";
 import { OutroScene } from "./scenes/OutroScene";
 import { FiveCatFacts } from "./FiveCatFacts";
 import { calculateFiveCatFactsMetadata } from "./calculateFiveCatFactsMetadata";
+import { FiveCatMyths } from "./FiveCatMyths";
+import { calculateFiveCatMythsMetadata } from "./calculateFiveCatMythsMetadata";
 import { FactsIntro } from "./facts/FactsIntro";
 import { FactsOutro } from "./facts/FactsOutro";
 import { FactScene } from "./facts/FactScene";
 import { facts } from "./facts/factsData";
+import { mythFacts } from "./facts/mythsData";
+import { VOICEOVER_DIR as MYTHS_VOICEOVER_DIR } from "./facts/mythsNarration";
 
 const FACT_DURATION = 135;
 
@@ -98,6 +102,40 @@ export const RemotionRoot: React.FC = () => {
         width={1080}
         height={1920}
         calculateMetadata={calculateFiveCatFactsMetadata}
+      />
+
+      <Folder name="FiveCatMyths-Scenes">
+        {mythFacts.map((fact, i) => {
+          const SingleMythFact: React.FC = () => (
+            <FactScene
+              fact={fact}
+              index={i}
+              total={mythFacts.length}
+              durationInFrames={FACT_DURATION}
+              voiceoverDir={MYTHS_VOICEOVER_DIR}
+            />
+          );
+          return (
+            <Composition
+              key={fact.number}
+              id={`Myth-${fact.number}`}
+              component={SingleMythFact}
+              durationInFrames={FACT_DURATION}
+              fps={30}
+              width={1080}
+              height={1920}
+            />
+          );
+        })}
+      </Folder>
+      <Composition
+        id="FiveCatMyths"
+        component={FiveCatMyths}
+        durationInFrames={735}
+        fps={30}
+        width={1080}
+        height={1920}
+        calculateMetadata={calculateFiveCatMythsMetadata}
       />
     </>
   );

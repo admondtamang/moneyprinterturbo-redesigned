@@ -1,0 +1,50 @@
+# @thecatcourt pipeline config. Edit freely — produce.py reads this at every run.
+# Rules derived from the 31-video channel analysis (2026-10-02). See PLAYBOOK.md §2.
+
+video:
+  # Winners were 18-34s (median 28.5). Best recent narrated upload was 19s.
+  target_seconds_min: 18
+  target_seconds_max: 25
+  aspect: "9:16"
+  # N sentences -> N search terms, one clip each. See CLAUDE.md on --match-materials-to-script.
+  sentences: 3
+  clip_duration: 7          # N * clip_duration must comfortably exceed audio length
+
+voice:
+  name: "gemini:Sulafat-Warm"
+
+subtitles:
+  position: "bottom"
+  uppercase: true
+  font: "BeVietnamPro-Bold.ttf"
+  size: 88
+  stroke_width: 4
+  fore_color: "#FFFFFF"
+  stroke_color: "#000000"
+
+metadata:
+  # Tags are INVERSELY correlated with views on this channel. Keep <= 3.
+  max_tags: 3
+  default_tags: ["cat", "cats", "catsofyoutube"]
+  # Winners all had emoji in the title; tail mostly did not.
+  require_emoji_in_title: true
+  # Winners' descriptions were short and ended in a comment prompt.
+  max_description_chars: 400
+  require_comment_prompt: true
+
+upload:
+  # "upload_post" (10/month cap) or "youtube_api" (unlimited, needs OAuth — see PLAYBOOK §6)
+  backend: "youtube_api"
+  privacy: "public"
+  contains_synthetic_media: true   # TTS narration = synthetic. Keep true for narrated videos.
+
+schedule:
+  uploads_per_day: 1
+  # Gaps killed this channel once (30-day gap, Jun-Jul 2026). Never let this go to 0.
+  pause: false
+
+footage:
+  # Use channel/footage/ library before falling back to Pexels stock + TTS.
+  prefer_library: true
+  fontsize: 52            # bit-format captions; NOT the 88px v1 subtitle style
+  music_bed: null         # path to a music file, or null for silent (see PLAYBOOK §9 open items)

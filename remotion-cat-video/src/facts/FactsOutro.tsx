@@ -10,8 +10,16 @@ import { palette } from "./palette";
 import { serif, sans } from "./fonts";
 import { Cat } from "../Cat";
 
-export const FactsOutro: React.FC<{ durationInFrames?: number }> = ({
+export const FactsOutro: React.FC<{
+  durationInFrames?: number;
+  line1?: string;
+  line2?: string;
+  audioSrc?: string;
+}> = ({
   durationInFrames = 75,
+  line1 = "Which fact surprised you?",
+  line2 = "Follow for more · Whiskers Studio",
+  audioSrc = "voiceover/five-cat-facts/outro.mp3",
 }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
@@ -29,7 +37,7 @@ export const FactsOutro: React.FC<{ durationInFrames?: number }> = ({
       }}
     >
       <Audio
-        src={staticFile("voiceover/five-cat-facts/outro.mp3")}
+        src={staticFile(audioSrc)}
         volume={(f) =>
           interpolate(
             f,
@@ -77,7 +85,7 @@ export const FactsOutro: React.FC<{ durationInFrames?: number }> = ({
           }),
         }}
       >
-        Which fact surprised you?
+        {line1}
       </div>
 
       <div
@@ -95,7 +103,7 @@ export const FactsOutro: React.FC<{ durationInFrames?: number }> = ({
           }),
         }}
       >
-        Follow for more · Whiskers Studio
+        {line2}
       </div>
     </div>
   );

@@ -15,7 +15,8 @@ export const FactScene: React.FC<{
   index: number;
   total: number;
   durationInFrames: number;
-}> = ({ fact, index, total, durationInFrames }) => {
+  voiceoverDir?: string;
+}> = ({ fact, index, total, durationInFrames, voiceoverDir = "five-cat-facts" }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
   const { Icon } = fact;
@@ -37,7 +38,7 @@ export const FactScene: React.FC<{
       }}
     >
       <Audio
-        src={staticFile(`voiceover/five-cat-facts/fact-${fact.number}.mp3`)}
+        src={staticFile(`voiceover/${voiceoverDir}/fact-${fact.number}.mp3`)}
         volume={(f) =>
           interpolate(
             f,

@@ -1,0 +1,43 @@
+# dozer — heavy machinery / construction Shorts
+# Same schema as the cat project. Edit freely; the pipeline reads this at every run.
+
+video:
+  target_seconds_min: 8
+  target_seconds_max: 20
+  aspect: "9:16"
+  sentences: 3
+  clip_duration: 7
+
+voice:
+  name: "gemini:Sulafat-Warm"     # only used by the stock+TTS fallback path
+
+subtitles:
+  position: "bottom"
+  uppercase: true
+  font: "BeVietnamPro-Bold.ttf"
+  size: 88
+  stroke_width: 4
+  fore_color: "#FFFFFF"
+  stroke_color: "#000000"
+
+metadata:
+  max_tags: 3
+  default_tags: ["excavator", "construction", "heavymachinery"]
+  require_emoji_in_title: true
+  max_description_chars: 400
+  require_comment_prompt: true
+
+upload:
+  backend: "youtube_api"
+  privacy: "public"
+  contains_synthetic_media: false
+
+schedule:
+  uploads_per_day: 1
+  pause: true          # HOLD until the channel handle is set and footage exists
+
+footage:
+  prefer_library: true
+  fontsize: 52
+  music_bed: null      # set once a bed suited to machinery is chosen
+  music_gain: -5

@@ -25,30 +25,52 @@ def has_audio(path):
     return bool(r.stdout.strip())
 
 def build(clip, captions, out, trim=None, music=None, fontsize=52, y_frac=0.54,
-          keep_audio=True):
+          keep_audio=True, music_gain=-7, music_duck_src=6):
     """captions: [[text, start, end], ...] seconds, relative to the trimmed clip."""
     vf = [f"crop='min(iw,ih*{W}/{H})':'min(ih,iw*{H}/{W})'", f"scale={W}:{H}", "fps=30"]
     for text, s, e in captions:
         vf.append(
             f"drawtext=fontfile={FONT}:text='{esc(text)}'"
             f":fontsize={fontsize}:fontcolor=white@0.97"
-            f":shadowcolor=black@0.55:shadowx=2:shadowy=2"
+            f":shadowcolor=black@0.8:shadowx=2:shadowy=2:borderw=1:bordercolor=black@0.45"
             f":x=(w-text_w)/2:y=h*{y_frac}"
             f":enable='between(t,{s},{e})'")
+    # ONE filter graph for video and audio. Mixing -vf with -filter_complex silently
+    # dropped the audio chain (the limiter never ran and output clipped at 0.0 dBFS).
+    vchain = "[0:v]" + ",".join(vf) + "[vout]"
+    # AAC reconstructs percussive transients ~3 dB above the PCM peak, so the limiter
+    # leaves real headroom (-7 dBFS) rather than the usual -1. YouTube normalises
+    # loudness anyway, so a quieter, clean master beats a loud, clipped one.
+    NORM = "loudnorm=I=-16:TP=-3:LRA=11,alimiter=limit=0.45:level=0"
+
     cmd = ["ffmpeg", "-y", "-loglevel", "error"]
     if trim:
         cmd += ["-ss", str(trim[0]), "-t", str(trim[1] - trim[0])]
     cmd += ["-i", clip]
     if music:
-        cmd += ["-i", music]
-    cmd += ["-vf", ",".join(vf)]
-    if music:
-        cmd += ["-map", "0:v", "-map", "1:a", "-shortest", "-c:a", "aac", "-b:a", "128k"]
-    elif keep_audio and has_audio(clip):
-        # Natural sound beats a wrong-mood bed — the reference keeps its own audio.
-        cmd += ["-map", "0:v", "-map", "0:a", "-c:a", "aac", "-b:a", "128k"]
+        cmd += ["-stream_loop", "-1", "-i", music]
+
+    src_audio = keep_audio and has_audio(clip)
+    if music and src_audio:
+        graph = (f"{vchain};"
+                 f"[0:a]volume={music_duck_src}dB[a0];"
+                 f"[1:a]volume={music_gain}dB,afade=t=in:st=0:d=0.4[a1];"
+                 f"[a0][a1]amix=inputs=2:duration=first:dropout_transition=0,{NORM}[aout]")
+        amap = ["-map", "[vout]", "-map", "[aout]", "-shortest",
+                "-c:a", "aac", "-b:a", "160k"]
+    elif music:
+        graph = (f"{vchain};"
+                 f"[1:a]volume={music_gain}dB,afade=t=in:st=0:d=0.4,{NORM}[aout]")
+        amap = ["-map", "[vout]", "-map", "[aout]", "-shortest",
+                "-c:a", "aac", "-b:a", "160k"]
+    elif src_audio:
+        graph = f"{vchain};[0:a]{NORM}[aout]"
+        amap = ["-map", "[vout]", "-map", "[aout]", "-c:a", "aac", "-b:a", "160k"]
     else:
-        cmd += ["-an"]
+        graph = vchain
+        amap = ["-map", "[vout]", "-an"]
+
+    cmd += ["-filter_complex", graph] + amap
     cmd += ["-c:v", "libx264", "-crf", "20", "-preset", "medium",
             "-pix_fmt", "yuv420p", "-movflags", "+faststart", out]
     r = subprocess.run(cmd, capture_output=True, text=True)
@@ -66,10 +88,11 @@ if __name__ == "__main__":
     ap.add_argument("--music")
     ap.add_argument("--fontsize", type=int, default=52)
     ap.add_argument("--no-audio", action="store_true")
+    ap.add_argument("--music-gain", type=float, default=-7)
     a = ap.parse_args()
     t = [float(x) for x in a.trim.split(",")] if a.trim else None
     build(a.clip, json.loads(a.captions), a.out, trim=t, music=a.music,
-          fontsize=a.fontsize, keep_audio=not a.no_audio)
+          fontsize=a.fontsize, keep_audio=not a.no_audio, music_gain=a.music_gain)
     d = subprocess.run(["ffprobe","-v","error","-show_entries","format=duration",
                         "-of","csv=p=0", a.out], capture_output=True, text=True).stdout.strip()
     print(f"{a.out}  {d}s")

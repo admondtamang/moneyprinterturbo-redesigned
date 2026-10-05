@@ -47,5 +47,6 @@ channel/pipeline/client_secret.json
 channel/pipeline/token.json
 channel/pipeline/env
 channel/logs/
+channel/assets/
 channel/footage/*
 remotion-cat-video/*

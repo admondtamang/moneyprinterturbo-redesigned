@@ -1,10 +1,13 @@
 #!/usr/bin/env python3
 """Dump pipeline state as JSON for the dashboard."""
 import json, subprocess, sys, datetime
+import sys
 from pathlib import Path
 import yaml
 
-CH = Path("/home/zmond/MoneyPrinterTurbo/channel")
+sys.path.insert(0, str(Path(__file__).parent))
+import projects as _P
+CH = _P.root()                    # --project / $CC_PROJECT aware
 sys.path.insert(0, str(CH / "pipeline"))
 import footage as F
 
@@ -47,7 +50,9 @@ for e in reversed(uploads):
                       "source": e.get("source","script"), "stats": views(vid) if vid else None})
 
 # pre-pipeline manual uploads, for the full Done picture
-for vid, tag in [("QWB9hNSf8jM","manual"), ("E3pzkvnXEWI","manual")]:
+_manual = [("QWB9hNSf8jM","manual"), ("E3pzkvnXEWI","manual")] \
+    if _P.current_name() == "catcourt" else []
+for vid, tag in _manual:
     if vid not in seen:
         s = views(vid)
         published.append({"idea": None, "title": s["title"] if s else vid, "ts": None,
@@ -56,7 +61,7 @@ for vid, tag in [("QWB9hNSf8jM","manual"), ("E3pzkvnXEWI","manual")]:
 
 try:
     chan = json.loads(subprocess.run(["yt-dlp","--flat-playlist","--no-warnings","-J",
-        "https://www.youtube.com/@thecatcourt"], capture_output=True, text=True,
+        (_P.meta().get("url") or "https://www.youtube.com/@thecatcourt")], capture_output=True, text=True,
         timeout=180).stdout)
     subs = chan.get("channel_follower_count")
 except Exception:
@@ -69,7 +74,7 @@ next_run = next((l.split("  ")[0].strip() for l in nxt.splitlines()
 
 state = {
  "generated": datetime.datetime.now().isoformat(timespec="seconds"),
- "channel": {"handle":"thecatcourt","subs":subs,
+ "channel": {"handle": _P.meta().get("handle"),"subs":subs,
              "total_views": sum((p["stats"] or {}).get("views",0) for p in published)},
  "next_run": next_run,
  "paused": bool(cfg["schedule"].get("pause")),

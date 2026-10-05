@@ -1,0 +1,22 @@
+# Project registry. Each project = one YouTube channel with its own config, content queue,
+# footage library and logs. The pipeline code is shared; only the data directories differ.
+#
+# Add a project: create its root dir with config.yaml + ideas.yaml + footage/inbox/,
+# then add an entry here. Nothing else needs changing.
+
+projects:
+  catcourt:
+    root: channel            # left in place deliberately — no migration
+    handle: thecatcourt
+    url: https://www.youtube.com/@thecatcourt
+    niche: cat shorts
+    status: active
+    started: 2026-10-02
+
+  dozer:
+    root: projects/dozer
+    handle: null             # set once the channel handle is known
+    url: null
+    niche: heavy machinery / construction
+    status: scaffolding      # no uploads until footage + handle exist
+    started: 2026-10-05

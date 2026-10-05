@@ -2,9 +2,12 @@
 """Twice-daily channel status. Pulls public stats, diffs against the last snapshot,
 desktop-notifies, and appends to logs/status.jsonl. No Claude session required."""
 import json, subprocess, datetime, sys
+import sys
 from pathlib import Path
 
-CH = Path("/home/zmond/MoneyPrinterTurbo/channel")
+sys.path.insert(0, str(Path(__file__).parent))
+import projects as _P
+CH = _P.root()                    # --project / $CC_PROJECT aware
 LOGS = CH / "logs"; LOGS.mkdir(exist_ok=True)
 SNAP = LOGS / "snapshot.json"
 

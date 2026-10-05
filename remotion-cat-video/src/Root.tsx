@@ -14,6 +14,10 @@ import { FactScene } from "./facts/FactScene";
 import { facts } from "./facts/factsData";
 import { mythFacts } from "./facts/mythsData";
 import { VOICEOVER_DIR as MYTHS_VOICEOVER_DIR } from "./facts/mythsNarration";
+import { MotionLab } from "./reel/MotionLab";
+import { TheCatCourt01 } from "./reel/TheCatCourt01";
+import { TheCatCourt02, FILM02_FRAMES } from "./reel/TheCatCourt02";
+import { FPS, TOTAL_FRAMES } from "./reel/beats";
 
 const FACT_DURATION = 135;
 
@@ -136,6 +140,34 @@ export const RemotionRoot: React.FC = () => {
         width={1080}
         height={1920}
         calculateMetadata={calculateFiveCatMythsMetadata}
+      />
+
+      <Composition
+        id="MotionLab"
+        component={MotionLab}
+        durationInFrames={TOTAL_FRAMES}
+        fps={FPS}
+        width={1080}
+        height={1920}
+      />
+
+      <Composition
+        id="TheCatCourt01"
+        component={TheCatCourt01}
+        durationInFrames={TOTAL_FRAMES}
+        fps={FPS}
+        width={1080}
+        height={1920}
+      />
+
+      {/* Film 02 — same picture at 75 BPM (0.625x) with narration. 35.2s. */}
+      <Composition
+        id="TheCatCourt02"
+        component={TheCatCourt02}
+        durationInFrames={FILM02_FRAMES}
+        fps={FPS}
+        width={1080}
+        height={1920}
       />
     </>
   );

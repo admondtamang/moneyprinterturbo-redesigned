@@ -36,7 +36,16 @@ upload:
   # "upload_post" (10/month cap) or "youtube_api" (unlimited, needs OAuth — see PLAYBOOK §6)
   backend: "youtube_api"
   privacy: "public"
-  contains_synthetic_media: true   # TTS narration = synthetic. Keep true for narrated videos.
+  # Do NOT tag uploads as AI-generated. Correct for what this pipeline makes:
+  # bit videos are real footage you filmed + text captions — no generated imagery,
+  # no synthetic voice, no altered depiction of a real person or event.
+  # Flip back to true ONLY if we reintroduce AI-generated video/images, a cloned
+  # voice, or an AI music track as the main content (see PLAYBOOK 12).
+  contains_synthetic_media: false
+  # Cross-post the same file to TikTok via Upload-Post after the main upload
+  # succeeds. Requires a TikTok account linked to the "thecatcourt" profile at
+  # upload-post.com, and counts against the 10-upload/cycle Upload-Post quota.
+  tiktok: false
 
 schedule:
   uploads_per_day: 1
@@ -47,4 +56,6 @@ footage:
   # Use channel/footage/ library before falling back to Pexels stock + TTS.
   prefer_library: true
   fontsize: 52            # bit-format captions; NOT the 88px v1 subtitle style
-  music_bed: null         # path to a music file, or null for silent (see PLAYBOOK §9 open items)
+  music_bed: "channel/assets/bed_gentle.wav"    # 88bpm marimba+pad+shaker, no drums
+  #   alternatives: bed_catchy.wav (drums, energetic), bed_warm.wav, bed_playful.wav
+  music_gain: -5          # dB, bed level relative to the lifted natural sound

@@ -5,9 +5,12 @@ Permission is enforced, not advisory — `pick` only ever returns clips cleared 
 Rationale in channel/footage/README.md and PLAYBOOK.md §3.
 """
 import argparse, hashlib, json, shutil, subprocess, sys, datetime
+import sys
 from pathlib import Path
 
-CH = Path("/home/zmond/MoneyPrinterTurbo/channel")
+sys.path.insert(0, str(Path(__file__).parent))
+import projects as _P
+CH = _P.root()                    # --project / $CC_PROJECT aware
 FOOT = CH / "footage"
 INBOX, USED, CLIPS = FOOT / "inbox", FOOT / "used", FOOT / "clips"
 MANIFEST = FOOT / "manifest.json"
@@ -240,5 +243,5 @@ if __name__ == "__main__":
     a.add_argument("--id", required=True); a.add_argument("--video-url", default=None)
     a = sub.add_parser("list"); a.set_defaults(fn=lst); a.add_argument("--ready", action="store_true")
     sub.add_parser("stats").set_defaults(fn=stats)
-    args = ap.parse_args()
+    args = ap.parse_args(_P.strip_project_args())
     sys.exit(args.fn(args))

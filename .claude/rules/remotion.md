@@ -39,3 +39,49 @@ Then register in `src/Root.tsx`: one `Composition` for the full video with `calc
 |---|---|---|---|
 | `FiveCatFacts` | "5 Cat Facts You Didn't Know" | `out/five-cat-facts.mp4` | not tracked — check YouTube Studio |
 | `FiveCatMyths` | "5 Cat 'Facts' That Are Actually Myths" / "Vets wish these would finally die" | `out/five-cat-myths.mp4` | https://www.youtube.com/watch?v=ZamyCi599h8 |
+
+## `src/reel/` — the motion-studio pipeline (Film 01 onward)
+A second, separate pipeline from the `facts` videos above. **60 fps**, beat-grid driven, no
+voiceover. Method adapted from Lukas Margerie's Opus 5.5 motion-graphics workflow
+(youtube.com/watch?v=747ZnEtsRbg), studied 2026-10-04.
+
+**Never import `src/reel/*` into the 30fps `facts` videos** — the frame maths will silently not
+line up. The two systems coexist; they do not mix.
+
+### The harness (read these before touching a film)
+| File | Purpose |
+|---|---|
+| `docs/motion-rules.md` | The contract: render purity, beat grid, **banned defaults**, sound spec, the 8+/10 gate |
+| `docs/brief.md` | Director's brief — logline, beat sheet, brand, workflow gates |
+| `docs/type-scale.md` | Measured type budget. **Read the "Use" column, not the "Floor" column** |
+| `docs/shotlist.md` | Per-beat table + sources for every on-screen claim |
+| `docs/sound.md` | Per-beat SFX map |
+| `docs/review_log.md` | Scored critique rounds |
+
+### Shared contracts — if two acts both draw a thing, neither act owns its number
+`src/reel/beats.ts` (grid), `motion.ts` (spring idioms), `glyphs.tsx` (SVG), `stage.ts` (loop
+geometry + `TABLE_STROKE` + `TABLEAU`), `sfx.ts` (beat→sound, the picture/sound contract).
+Guarded by `npx tsx src/reel/{motion,sfx}.check.ts`.
+
+### Workflow — do not skip the gate
+1. `scripts/contact-sheet.sh TheCatCourt01 <round>` → draft render + one frame per beat + a
+   **360px readability strip**.
+2. **Look at the strip.** Score 7 axes in `docs/review_log.md`. Fix the 3 worst. Repeat.
+3. Only when **every axis is 8+**: `scripts/final-render.sh TheCatCourt01 <name>`.
+
+### Lessons that cost rounds — do not rediscover
+- Full-res frames look fine while the 360px strip fails. Review at 360px.
+- But the strip is **not sufficient**: a mid-transition frame hid a clipping bug that only showed
+  at full res. Spot-check transitional beats at full resolution too.
+- A heavy blur on a near-white fill reads as a **banned glow orb** at phone size.
+- A ring centred between two lines of type **bisects both by construction**. Offset it.
+- Low contrast reads as illegible before small size does (`textMuted` on `panel` failed).
+- Parallel agents drift: the score and shotlist disagreed on SFX placement; Hook and Lockup
+  disagreed on stroke weight. Both fixed by a single shared constant, not by coordination.
+- Verify the loop with a **pixel diff**, not by eye. A moving element must differ by exactly one
+  frame of travel; everything else must be identical.
+
+### Built
+| Composition | Hook | Output |
+|---|---|---|
+| `TheCatCourt01` | "IT DID NOT FALL" — *The State v. The Cat*, 22s, 1080x1920@60 | `out/thecatcourt-01.mp4` |

@@ -9,7 +9,9 @@ import argparse, json, os, subprocess, sys, datetime, re
 from pathlib import Path
 
 ROOT = Path("/home/zmond/MoneyPrinterTurbo")
-CH = ROOT / "channel"
+sys.path.insert(0, str(Path(__file__).parent))
+import projects as _P
+CH = _P.root()                       # --project / $CC_PROJECT aware
 LOGS = CH / "logs"
 PY = ROOT / ".venv/bin/python"
 
@@ -57,9 +59,22 @@ def try_library(cfg, a):
                   f"({', '.join(c['id'] for c in waiting[:4])}) — falling back to stock flow",
                   file=sys.stderr)
         return None
-    cands.sort(key=lambda c: (-(1 if (c.get("height") or 0) > (c.get("width") or 0) else 0),
-                              -(c.get("duration") or 0), c["added"]))
-    clip = cands[0]
+    def rank(c):
+        portrait = 1 if (c.get("height") or 0) > (c.get("width") or 0) else 0
+        own = 1 if c["source"] == "own" else 0       # your footage before stock
+        return (-own, -portrait, c["added"])
+    if a.clip:
+        clip = next((c for c in m["clips"] if c["id"] == a.clip), None)
+        if clip is None:
+            print(f"no clip {a.clip} in library", file=sys.stderr); return 2
+        if not F.usable(clip):
+            print(f"clip {a.clip} is not usable "
+                  f"(used={clip['used']} permission={clip['permission']} "
+                  f"captions={len(clip.get('captions') or [])})", file=sys.stderr)
+            return 2
+    else:
+        cands.sort(key=rank)
+        clip = cands[0]
     src = str(CH / clip["file"])
     dur = clip.get("duration") or 12.0
 
@@ -72,15 +87,35 @@ def try_library(cfg, a):
             en = round((k + 1) * dur / n - 0.1, 2)
         caps.append([text, st, en])
 
+    # Trim to the bit. `trim_start` lets a long source clip contribute only its good
+    # stretch (skipping burned-in text, dead air, etc.); captions are relative to it.
+    t0 = float(clip.get("trim_start") or 0)
+    end = t0 + max(c[2] for c in caps) + 0.3
+    trim = (t0, round(min(end, dur), 2)) if (t0 > 0 or end < dur - 0.5) else None
+
     out = str(ROOT / "storage/tasks" / f"bit-{clip['id']}.mp4")
     bcfg = cfg.get("footage", {})
-    print(f"[library:{clip['id']}] building bit, {len(caps)} captions, {dur}s", flush=True)
-    bit_build(src, caps, out, music=bcfg.get("music_bed") or None,
-              fontsize=bcfg.get("fontsize", 52))
+    print(f"[library:{clip['id']}] building bit, {len(caps)} captions, "
+          f"{trim[1] if trim else dur}s"
+          f"{' (trimmed from %.1fs)' % dur if trim else ''}", flush=True)
+    bed = bcfg.get("music_bed")
+    bed = str(ROOT / bed) if bed else None
+    bit_build(src, caps, out, trim=trim, music=bed,
+              fontsize=bcfg.get("fontsize", 52),
+              music_gain=bcfg.get("music_gain", -7))
 
     title = clip.get("title") or caps[0][0]
     prompt = clip.get("prompt") or "Does your cat do this?"
-    credit = f"\n\nClip: {clip['credit']}" if clip.get("credit") else ""
+    # CC-BY requires attribution: title, author, source, licence.
+    if clip.get("credit"):
+        if clip.get("source") == "youtube_cc":
+            src = clip.get("source_url") or ""
+            credit = (f"\n\n--\nFootage by {clip['credit']}\n"
+                      f"Source: {src}\nLicensed under CC BY 3.0 — reused with attribution.")
+        else:
+            credit = f"\n\nClip: {clip['credit']}"
+    else:
+        credit = ""
     desc = f"{caps[0][0]}\n\n{prompt}{credit}\n\n#Shorts #cat #cats"
 
     entry = {"ts": datetime.datetime.now().isoformat(), "clip": clip["id"],
@@ -97,6 +132,7 @@ def try_library(cfg, a):
                          if res.get(k) is not None}
     log(entry)
     if ok:
+        post_tiktok(cfg, out, desc)
         url = res.get("url") or res.get("request_id")
         for c in m["clips"]:
             if c["id"] == clip["id"]:
@@ -107,6 +143,17 @@ def try_library(cfg, a):
         return 0
     print(f"[library:{clip['id']}] UPLOAD FAILED: {res}", file=sys.stderr)
     return 1
+
+def post_tiktok(cfg, video, caption):
+    """Cross-post to TikTok via Upload-Post. No-op unless upload.tiktok is true."""
+    if not cfg["upload"].get("tiktok"):
+        return None
+    sys.path.insert(0, str(ROOT))
+    from app.services.upload_post import UploadPostService
+    res = UploadPostService().upload_video(
+        video_path=video, title=caption[:2200], platforms=["tiktok"])
+    print(f"[tiktok] {'ok' if res.get('success') else 'FAILED'}: {res}")
+    return res
 
 def do_upload(cfg, video, title, desc, tags):
     backend = cfg["upload"].get("backend", "upload_post")
@@ -131,11 +178,26 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--dry-run", action="store_true")
     ap.add_argument("--idea", help="force a specific idea id")
-    a = ap.parse_args()
+    ap.add_argument("--force", action="store_true", help="upload even if one went out today")
+    ap.add_argument("--clip", help="force a specific library clip id")
+    a = ap.parse_args(_P.strip_project_args())
 
     cfg = load_yaml(CH / "config.yaml")
     if cfg["schedule"].get("pause"):
         print("paused via config.yaml (schedule.pause: true)"); return 0
+
+    # One upload per day. Without this, a manual run plus the timer double-posts.
+    if not a.dry_run and not a.force:
+        up = LOGS / "uploads.jsonl"
+        today = datetime.date.today().isoformat()
+        if up.exists():
+            for line in up.read_text().strip().splitlines():
+                try: e = json.loads(line)
+                except Exception: continue
+                if e.get("status") == "uploaded" and (e.get("ts") or "").startswith(today):
+                    print(f"already uploaded today ({e.get('idea') or e.get('clip')}) "
+                          f"- skipping. Use --force to override.")
+                    return 0
 
     # Prefer the footage library (your own / permission-cleared clips with a bit written).
     # Falls back to the stock-footage narrated flow when nothing is ready.
@@ -243,6 +305,7 @@ def main():
                          if res.get(k) is not None}
     log(entry)
     if ok:
+        post_tiktok(cfg, video, desc)
         mark_used(CH / "ideas.yaml", idea["id"])
         print(f"[{idea['id']}] uploaded. request_id={res.get('request_id')}")
         return 0

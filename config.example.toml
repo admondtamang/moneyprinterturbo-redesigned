@@ -515,3 +515,19 @@ open_task_folder_on_completion = true
 # subtitle_background_enabled = false
 # subtitle_background_color = "#000000"
 # rounded_subtitle_background = false
+
+[meta]
+# Direct Meta Graph API posting for Facebook Page Reels + Instagram Reels, used by
+# channel/pipeline/meta_post.py. Free alternative to Upload-Post's paid tier.
+# TikTok is deliberately NOT here: its Content Posting API restricts unaudited
+# clients to private-only posts, which no amount of self-hosting works around.
+#
+# page_token  — long-lived Page access token (NOT a user token). Scopes required:
+#               pages_show_list, pages_read_engagement, pages_manage_posts,
+#               instagram_basic, instagram_content_publish
+# page_id     — numeric id of the Facebook Page that publishes the reels
+# ig_user_id  — numeric Instagram *Business/Creator* user id linked to that Page
+#
+# page_token = ""
+# page_id = ""
+# ig_user_id = ""

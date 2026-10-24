@@ -1,0 +1,485 @@
+[
+  {
+    "text": "Here",
+    "startMs": 340,
+    "endMs": 470,
+    "timestampMs": 580,
+    "confidence": 0.664731
+  },
+  {
+    "text": " is",
+    "startMs": 470,
+    "endMs": 860,
+    "timestampMs": 900,
+    "confidence": 0.941702
+  },
+  {
+    "text": " how",
+    "startMs": 860,
+    "endMs": 1050,
+    "timestampMs": 1160,
+    "confidence": 0.99222
+  },
+  {
+    "text": " I",
+    "startMs": 1050,
+    "endMs": 1160,
+    "timestampMs": 1380,
+    "confidence": 0.989542
+  },
+  {
+    "text": " get",
+    "startMs": 1160,
+    "endMs": 1500,
+    "timestampMs": 1520,
+    "confidence": 0.766097
+  },
+  {
+    "text": " made.",
+    "startMs": 1500,
+    "endMs": 2500,
+    "timestampMs": 2700,
+    "confidence": 0.973073
+  },
+  {
+    "text": " A",
+    "startMs": 2500,
+    "endMs": 2640,
+    "timestampMs": 2700,
+    "confidence": 0.730362
+  },
+  {
+    "text": " human",
+    "startMs": 2640,
+    "endMs": 3150,
+    "timestampMs": 3080,
+    "confidence": 0.988343
+  },
+  {
+    "text": " writes",
+    "startMs": 3150,
+    "endMs": 3870,
+    "timestampMs": 3440,
+    "confidence": 0.807585
+  },
+  {
+    "text": " my",
+    "startMs": 3870,
+    "endMs": 4000,
+    "timestampMs": 3700,
+    "confidence": 0.995311
+  },
+  {
+    "text": " lines.",
+    "startMs": 4000,
+    "endMs": 4900,
+    "timestampMs": 4880,
+    "confidence": 0.993525
+  },
+  {
+    "text": " Gemini",
+    "startMs": 4900,
+    "endMs": 5430,
+    "timestampMs": 5320,
+    "confidence": 0.547877
+  },
+  {
+    "text": " turns",
+    "startMs": 5430,
+    "endMs": 5880,
+    "timestampMs": 5900,
+    "confidence": 0.9946
+  },
+  {
+    "text": " that",
+    "startMs": 5880,
+    "endMs": 6330,
+    "timestampMs": 6160,
+    "confidence": 0.995408
+  },
+  {
+    "text": " text",
+    "startMs": 6330,
+    "endMs": 6600,
+    "timestampMs": 6480,
+    "confidence": 0.999123
+  },
+  {
+    "text": " into",
+    "startMs": 6600,
+    "endMs": 6960,
+    "timestampMs": 6920,
+    "confidence": 0.989391
+  },
+  {
+    "text": " a",
+    "startMs": 6960,
+    "endMs": 7050,
+    "timestampMs": 7100,
+    "confidence": 0.994954
+  },
+  {
+    "text": " speaking",
+    "startMs": 7050,
+    "endMs": 7750,
+    "timestampMs": 7340,
+    "confidence": 0.995413
+  },
+  {
+    "text": " voice.",
+    "startMs": 7750,
+    "endMs": 8500,
+    "timestampMs": 8840,
+    "confidence": 0.997485
+  },
+  {
+    "text": " Then,",
+    "startMs": 8500,
+    "endMs": 9260,
+    "timestampMs": 9200,
+    "confidence": 0.989238
+  },
+  {
+    "text": " FFmpeg",
+    "startMs": 9260,
+    "endMs": 9770,
+    "timestampMs": 9940,
+    "confidence": 0.412474
+  },
+  {
+    "text": " pitches",
+    "startMs": 9770,
+    "endMs": 10390,
+    "timestampMs": 10560,
+    "confidence": 0.915247
+  },
+  {
+    "text": " the",
+    "startMs": 10390,
+    "endMs": 10610,
+    "timestampMs": 10800,
+    "confidence": 0.993904
+  },
+  {
+    "text": " whole",
+    "startMs": 10610,
+    "endMs": 11080,
+    "timestampMs": 10960,
+    "confidence": 0.998148
+  },
+  {
+    "text": " thing",
+    "startMs": 11080,
+    "endMs": 11620,
+    "timestampMs": 11260,
+    "confidence": 0.996105
+  },
+  {
+    "text": " up",
+    "startMs": 11620,
+    "endMs": 12030,
+    "timestampMs": 11500,
+    "confidence": 0.997202
+  },
+  {
+    "text": " because",
+    "startMs": 12030,
+    "endMs": 12820,
+    "timestampMs": 12140,
+    "confidence": 0.4175
+  },
+  {
+    "text": " I",
+    "startMs": 12820,
+    "endMs": 12840,
+    "timestampMs": 12560,
+    "confidence": 0.983177
+  },
+  {
+    "text": " am",
+    "startMs": 12840,
+    "endMs": 13090,
+    "timestampMs": 12900,
+    "confidence": 0.960059
+  },
+  {
+    "text": " a",
+    "startMs": 13090,
+    "endMs": 13210,
+    "timestampMs": 13020,
+    "confidence": 0.994
+  },
+  {
+    "text": " cat.",
+    "startMs": 13210,
+    "endMs": 14000,
+    "timestampMs": 14360,
+    "confidence": 0.983905
+  },
+  {
+    "text": " Whisper",
+    "startMs": 14000,
+    "endMs": 14540,
+    "timestampMs": 14580,
+    "confidence": 0.883748
+  },
+  {
+    "text": " listens",
+    "startMs": 14540,
+    "endMs": 15010,
+    "timestampMs": 14820,
+    "confidence": 0.997326
+  },
+  {
+    "text": " back",
+    "startMs": 15010,
+    "endMs": 15250,
+    "timestampMs": 15220,
+    "confidence": 0.999316
+  },
+  {
+    "text": " and",
+    "startMs": 15250,
+    "endMs": 15520,
+    "timestampMs": 15560,
+    "confidence": 0.987549
+  },
+  {
+    "text": " writes",
+    "startMs": 15520,
+    "endMs": 15890,
+    "timestampMs": 15760,
+    "confidence": 0.99725
+  },
+  {
+    "text": " down",
+    "startMs": 15890,
+    "endMs": 16320,
+    "timestampMs": 16120,
+    "confidence": 0.993362
+  },
+  {
+    "text": " exactly",
+    "startMs": 16320,
+    "endMs": 16890,
+    "timestampMs": 16640,
+    "confidence": 0.945066
+  },
+  {
+    "text": " when",
+    "startMs": 16890,
+    "endMs": 17000,
+    "timestampMs": 17000,
+    "confidence": 0.98017
+  },
+  {
+    "text": " every",
+    "startMs": 17000,
+    "endMs": 17460,
+    "timestampMs": 17320,
+    "confidence": 0.985656
+  },
+  {
+    "text": " single",
+    "startMs": 17460,
+    "endMs": 17950,
+    "timestampMs": 17740,
+    "confidence": 0.972895
+  },
+  {
+    "text": " word",
+    "startMs": 17950,
+    "endMs": 18290,
+    "timestampMs": 18040,
+    "confidence": 0.997619
+  },
+  {
+    "text": " lands.",
+    "startMs": 18290,
+    "endMs": 19000,
+    "timestampMs": 19320,
+    "confidence": 0.990215
+  },
+  {
+    "text": " Remotion",
+    "startMs": 19000,
+    "endMs": 19630,
+    "timestampMs": 19860,
+    "confidence": 0.333758
+  },
+  {
+    "text": " paints",
+    "startMs": 19630,
+    "endMs": 20090,
+    "timestampMs": 20140,
+    "confidence": 0.972503
+  },
+  {
+    "text": " those",
+    "startMs": 20090,
+    "endMs": 20500,
+    "timestampMs": 20460,
+    "confidence": 0.9967
+  },
+  {
+    "text": " timings",
+    "startMs": 20500,
+    "endMs": 20980,
+    "timestampMs": 20960,
+    "confidence": 0.99268
+  },
+  {
+    "text": " onto",
+    "startMs": 20980,
+    "endMs": 21290,
+    "timestampMs": 21180,
+    "confidence": 0.954097
+  },
+  {
+    "text": " the",
+    "startMs": 21290,
+    "endMs": 21510,
+    "timestampMs": 21420,
+    "confidence": 0.996016
+  },
+  {
+    "text": " screen,",
+    "startMs": 21510,
+    "endMs": 22330,
+    "timestampMs": 22240,
+    "confidence": 0.999508
+  },
+  {
+    "text": " one",
+    "startMs": 22330,
+    "endMs": 22610,
+    "timestampMs": 22420,
+    "confidence": 0.917307
+  },
+  {
+    "text": " word",
+    "startMs": 22610,
+    "endMs": 22930,
+    "timestampMs": 22720,
+    "confidence": 0.997592
+  },
+  {
+    "text": " at",
+    "startMs": 22930,
+    "endMs": 23140,
+    "timestampMs": 22980,
+    "confidence": 0.991162
+  },
+  {
+    "text": " a",
+    "startMs": 23140,
+    "endMs": 23240,
+    "timestampMs": 23080,
+    "confidence": 0.994569
+  },
+  {
+    "text": " time.",
+    "startMs": 23240,
+    "endMs": 24000,
+    "timestampMs": 24160,
+    "confidence": 0.999582
+  },
+  {
+    "text": " That",
+    "startMs": 24000,
+    "endMs": 24270,
+    "timestampMs": 24340,
+    "confidence": 0.918608
+  },
+  {
+    "text": " is",
+    "startMs": 24270,
+    "endMs": 24430,
+    "timestampMs": 24520,
+    "confidence": 0.947695
+  },
+  {
+    "text": " why",
+    "startMs": 24430,
+    "endMs": 24660,
+    "timestampMs": 24720,
+    "confidence": 0.994399
+  },
+  {
+    "text": " the",
+    "startMs": 24660,
+    "endMs": 24820,
+    "timestampMs": 24840,
+    "confidence": 0.997354
+  },
+  {
+    "text": " highlight",
+    "startMs": 24820,
+    "endMs": 25410,
+    "timestampMs": 25060,
+    "confidence": 0.882281
+  },
+  {
+    "text": " always",
+    "startMs": 25410,
+    "endMs": 25830,
+    "timestampMs": 25600,
+    "confidence": 0.99732
+  },
+  {
+    "text": " hits",
+    "startMs": 25830,
+    "endMs": 26100,
+    "timestampMs": 25860,
+    "confidence": 0.995042
+  },
+  {
+    "text": " on",
+    "startMs": 26100,
+    "endMs": 26230,
+    "timestampMs": 26120,
+    "confidence": 0.983142
+  },
+  {
+    "text": " the",
+    "startMs": 26230,
+    "endMs": 26420,
+    "timestampMs": 26260,
+    "confidence": 0.997868
+  },
+  {
+    "text": " beat.",
+    "startMs": 26420,
+    "endMs": 27000,
+    "timestampMs": 27220,
+    "confidence": 0.448214
+  },
+  {
+    "text": " No",
+    "startMs": 27000,
+    "endMs": 27230,
+    "timestampMs": 27300,
+    "confidence": 0.766218
+  },
+  {
+    "text": " guessing,",
+    "startMs": 27230,
+    "endMs": 28330,
+    "timestampMs": 28160,
+    "confidence": 0.922734
+  },
+  {
+    "text": " just",
+    "startMs": 28330,
+    "endMs": 28540,
+    "timestampMs": 28540,
+    "confidence": 0.973144
+  },
+  {
+    "text": " math.",
+    "startMs": 28540,
+    "endMs": 29500,
+    "timestampMs": 29300,
+    "confidence": 0.987993
+  }
+]

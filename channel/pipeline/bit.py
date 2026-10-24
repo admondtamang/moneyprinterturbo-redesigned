@@ -96,3 +96,70 @@ if __name__ == "__main__":
     d = subprocess.run(["ffprobe","-v","error","-show_entries","format=duration",
                         "-of","csv=p=0", a.out], capture_output=True, text=True).stdout.strip()
     print(f"{a.out}  {d}s")
+
+
+def build_montage(segments, captions, out, music=None, fontsize=52, y_frac=0.54,
+                  music_gain=-5, cut=None):
+    """Cut a rhythm INSIDE the footage — the format every 7M+ machinery Short uses.
+
+    Research (PLAYBOOK dozer section): videos above 7M views cut 5-7 times per 10s on one
+    continuous task; single-shot videos cap around 500k. `segments` is a list of
+    [clip_path, start, duration] taken from one or several source clips.
+
+    Captions are timed against the ASSEMBLED timeline, not any single source clip.
+    """
+    ins, chains, labels = [], [], []
+    for i, seg in enumerate(segments):
+        clip, st, dur = seg[0], seg[1], seg[2]
+        # optional 4th/5th: zoom (1.0 = wide) and vertical focus (0=top,1=bottom).
+        # Stock gives one camera per job, so punch-ins are how we get angle variety
+        # without breaking the single-task continuity that makes the format work.
+        zoom = float(seg[3]) if len(seg) > 3 else 1.0
+        foc  = float(seg[4]) if len(seg) > 4 else 0.5
+        ins += ["-ss", str(st), "-t", str(dur), "-i", clip]
+        if zoom > 1.001:
+            cw, chh = f"iw/{zoom:.4f}", f"ih/{zoom:.4f}"
+            chains.append(
+                f"[{i}:v]crop={cw}:{chh}:(iw-{cw})/2:(ih-{chh})*{foc:.3f},"
+                f"scale={W}:{H}:force_original_aspect_ratio=increase,crop={W}:{H},"
+                f"fps=30,setsar=1,setpts=PTS-STARTPTS[v{i}]")
+        else:
+            chains.append(
+                f"[{i}:v]scale={W}:{H}:force_original_aspect_ratio=increase,"
+                f"crop={W}:{H},fps=30,setsar=1,setpts=PTS-STARTPTS[v{i}]")
+        labels.append(f"[v{i}]")
+    graph = ";".join(chains) + ";" + "".join(labels) + f"concat=n={len(segments)}:v=1:a=0[cat]"
+
+    cap = "[cat]"
+    if captions:
+        parts = []
+        for text, s, e in captions:
+            parts.append(
+                f"drawtext=fontfile={FONT}:text='{esc(text)}'"
+                f":fontsize={fontsize}:fontcolor=white@0.97"
+                f":shadowcolor=black@0.8:shadowx=2:shadowy=2:borderw=1:bordercolor=black@0.45"
+                f":x=(w-text_w)/2:y=h*{y_frac}"
+                f":enable='between(t,{s},{e})'")
+        graph += f";[cat]{','.join(parts)}[vout]"
+        cap = "[vout]"
+    else:
+        graph += ";[cat]null[vout]"
+        cap = "[vout]"
+
+    NORM = "loudnorm=I=-16:TP=-3:LRA=11,alimiter=limit=0.45:level=0"
+    cmd = ["ffmpeg", "-y", "-loglevel", "error"] + ins
+    if music:
+        cmd += ["-stream_loop", "-1", "-i", music]
+        graph += (f";[{len(segments)}:a]volume={music_gain}dB,"
+                  f"afade=t=in:st=0:d=0.4,{NORM}[aout]")
+        amap = ["-map", cap, "-map", "[aout]", "-shortest", "-c:a", "aac", "-b:a", "160k"]
+    else:
+        amap = ["-map", cap, "-an"]
+    cmd += ["-filter_complex", graph] + amap
+    cmd += ["-c:v", "libx264", "-crf", "20", "-preset", "medium",
+            "-pix_fmt", "yuv420p", "-movflags", "+faststart", out]
+    r = subprocess.run(cmd, capture_output=True, text=True)
+    if r.returncode:
+        print(r.stderr[-2500:], file=sys.stderr)
+        sys.exit(1)
+    return out

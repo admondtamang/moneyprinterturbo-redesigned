@@ -5,7 +5,7 @@ Run standalone (systemd timer calls this). Exits non-zero on failure so the time
   --dry-run   render only, do not upload
   --no-render reuse the last render for this idea (debugging upload)
 """
-import argparse, json, os, subprocess, sys, datetime, re
+import argparse, json, os, subprocess, sys, datetime, re, zlib
 from pathlib import Path
 
 ROOT = Path("/home/zmond/MoneyPrinterTurbo")
@@ -67,7 +67,9 @@ def try_library(cfg, a):
         clip = next((c for c in m["clips"] if c["id"] == a.clip), None)
         if clip is None:
             print(f"no clip {a.clip} in library", file=sys.stderr); return 2
-        if not F.usable(clip):
+        # Naming a clip explicitly in --dry-run means "re-render this", which is
+        # legitimate for clips already marked used (e.g. swapping the music bed).
+        if not F.usable(clip) and not a.dry_run:
             print(f"clip {a.clip} is not usable "
                   f"(used={clip['used']} permission={clip['permission']} "
                   f"captions={len(clip.get('captions') or [])})", file=sys.stderr)
@@ -98,7 +100,10 @@ def try_library(cfg, a):
     print(f"[library:{clip['id']}] building bit, {len(caps)} captions, "
           f"{trim[1] if trim else dur}s"
           f"{' (trimmed from %.1fs)' % dur if trim else ''}", flush=True)
-    bed = bcfg.get("music_bed")
+    bed = pick_bed(bcfg, clip, m["clips"])
+    clip["music_used"] = bed
+    F.save(m)
+    print(f"[library:{clip['id']}] music bed: {bed}", flush=True)
     bed = str(ROOT / bed) if bed else None
     bit_build(src, caps, out, trim=trim, music=bed,
               fontsize=bcfg.get("fontsize", 52),
@@ -144,6 +149,29 @@ def try_library(cfg, a):
     print(f"[library:{clip['id']}] UPLOAD FAILED: {res}", file=sys.stderr)
     return 1
 
+def pick_bed(bcfg, clip, clips):
+    """Choose this clip's music bed.
+
+    Every bit used to share one hardcoded bed, so the whole channel sounded
+    identical. Pick the least-used bed across the library instead, so beds
+    rotate and no two neighbouring clips collide. Hashing the clip id alone
+    was tried first and collided on the existing four clips.
+
+    Precedence: clip["music"] override > least-used bed > legacy music_bed.
+    """
+    if clip.get("music"):
+        return clip["music"]
+    beds = bcfg.get("music_beds") or []
+    if not beds:
+        return bcfg.get("music_bed")            # legacy single-bed config
+    used = {}
+    for c in clips:
+        if c["id"] != clip["id"] and c.get("music_used"):
+            used[c["music_used"]] = used.get(c["music_used"], 0) + 1
+    # Tie-break on the clip id so a re-render always picks the same bed.
+    salt = zlib.crc32(clip["id"].encode())
+    return min(beds, key=lambda b: (used.get(b, 0), (zlib.crc32(b.encode()) ^ salt)))
+
 def post_tiktok(cfg, video, caption):
     """Cross-post to TikTok via Upload-Post. No-op unless upload.tiktok is true."""
     if not cfg["upload"].get("tiktok"):
@@ -163,7 +191,8 @@ def do_upload(cfg, video, title, desc, tags):
         try:
             return yt_upload(video, title, desc, tags,
                              privacy=cfg["upload"]["privacy"],
-                             synthetic=cfg["upload"]["contains_synthetic_media"])
+                             synthetic=cfg["upload"]["contains_synthetic_media"],
+                             category=str(cfg["upload"].get("category", "15")))
         except Exception as e:
             return {"success": False, "error": f"{type(e).__name__}: {e}"}
     sys.path.insert(0, str(ROOT))
@@ -285,7 +314,8 @@ def main():
         try:
             res = yt_upload(video, idea["title"], desc, tags,
                             privacy=cfg["upload"]["privacy"],
-                            synthetic=cfg["upload"]["contains_synthetic_media"])
+                            synthetic=cfg["upload"]["contains_synthetic_media"],
+                            category=str(cfg["upload"].get("category", "15")))
         except Exception as e:
             res = {"success": False, "error": f"{type(e).__name__}: {e}"}
     else:

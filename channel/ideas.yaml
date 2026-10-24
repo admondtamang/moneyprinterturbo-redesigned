@@ -28,7 +28,7 @@
   prompt: "Has your cat ever chattered at you? What set it off?"
 
 - id: 2026-10-05-slowblink
-  used: false
+  used: true
   title: "Blink slowly at your cat. Watch what happens 👁️😺"
   script:
     - "A slow blink from a cat is the closest thing they have to saying they trust you."

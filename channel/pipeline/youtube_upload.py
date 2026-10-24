@@ -2,13 +2,14 @@
 """Direct YouTube Data API uploader — resumable, no size cap, no monthly quota ceiling
 (10,000 API units/day; an upload costs ~1,600, so ~6 uploads/day).
 
-One-time auth:   ./.venv/bin/python channel/pipeline/youtube_upload.py --auth
+One-time auth:   ./.venv/bin/python channel/pipeline/youtube_upload.py --auth [--project dozer]
 Then produce.py can use backend: youtube_api in config.yaml.
 
 Needs channel/pipeline/client_secret.json — see channel/SETUP-YOUTUBE-API.md
 """
 import argparse, json, sys
 from pathlib import Path
+import projects as _P
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
@@ -16,8 +17,10 @@ from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload
 
 HERE = Path(__file__).parent
-SECRET = HERE / "client_secret.json"
-TOKEN = HERE / "token.json"
+SECRET = HERE / "client_secret.json"       # shared Google Cloud OAuth client
+# One token per project = one YouTube channel. Pick the right channel in the
+# consent screen when running --auth --project <name>.
+TOKEN = HERE / f"token-{_P.current_name()}.json"
 SCOPES = ["https://www.googleapis.com/auth/youtube.upload"]
 
 def creds():
@@ -25,7 +28,11 @@ def creds():
     if TOKEN.exists():
         c = Credentials.from_authorized_user_file(str(TOKEN), SCOPES)
     if c and c.expired and c.refresh_token:
-        c.refresh(Request()); TOKEN.write_text(c.to_json())
+        try:
+            c.refresh(Request()); TOKEN.write_text(c.to_json())
+        except Exception as e:      # invalid_grant — token revoked, re-consent below
+            print(f"token refresh failed ({e}); re-authorizing")
+            c = None
     if not c or not c.valid:
         if not SECRET.exists():
             sys.exit(f"missing {SECRET} — see channel/SETUP-YOUTUBE-API.md")
@@ -74,7 +81,7 @@ if __name__ == "__main__":
     ap.add_argument("--auth", action="store_true", help="run the one-time consent flow")
     ap.add_argument("--video"); ap.add_argument("--title")
     ap.add_argument("--description", default=""); ap.add_argument("--tags", default="")
-    a = ap.parse_args()
+    a = ap.parse_args(_P.strip_project_args())
     if a.auth:
         creds(); print("authorized."); sys.exit(0)
     if not a.video:

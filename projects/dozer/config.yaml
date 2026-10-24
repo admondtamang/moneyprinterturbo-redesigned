@@ -2,8 +2,8 @@
 # Same schema as the cat project. Edit freely; the pipeline reads this at every run.
 
 video:
-  target_seconds_min: 8
-  target_seconds_max: 20
+  target_seconds_min: 10
+  target_seconds_max: 15
   aspect: "9:16"
   sentences: 3
   clip_duration: 7
@@ -31,6 +31,7 @@ upload:
   backend: "youtube_api"
   privacy: "public"
   contains_synthetic_media: false
+  category: "2"        # Autos & Vehicles (cat project uses 15 = Pets & Animals)
 
 schedule:
   uploads_per_day: 1
@@ -39,5 +40,5 @@ schedule:
 footage:
   prefer_library: true
   fontsize: 52
-  music_bed: null      # set once a bed suited to machinery is chosen
+  music_bed: "channel/assets/bed_catchy.wav"   # machinery suits the drum bed, not the marimba
   music_gain: -5

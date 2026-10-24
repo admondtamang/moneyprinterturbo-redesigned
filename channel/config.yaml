@@ -56,6 +56,11 @@ footage:
   # Use channel/footage/ library before falling back to Pexels stock + TTS.
   prefer_library: true
   fontsize: 52            # bit-format captions; NOT the 88px v1 subtitle style
-  music_bed: "channel/assets/bed_gentle.wav"    # 88bpm marimba+pad+shaker, no drums
-  #   alternatives: bed_catchy.wav (drums, energetic), bed_warm.wav, bed_playful.wav
+  # Beds rotate least-used-first across the library so the channel does not sound
+  # like one looping track. Override per clip with "music" in footage/manifest.json.
+  music_beds:
+    - "channel/assets/bed_gentle.wav"     # 88bpm marimba+pad+shaker, no drums
+    - "channel/assets/bed_catchy.wav"     # drums, energetic
+    - "channel/assets/bed_playful.wav"
+    - "channel/assets/bed_warm.wav"
   music_gain: -5          # dB, bed level relative to the lifted natural sound

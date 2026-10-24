@@ -1,0 +1,268 @@
+[
+  {
+    "text": "You",
+    "startMs": 260,
+    "endMs": 300,
+    "timestampMs": 480,
+    "confidence": 0.890435
+  },
+  {
+    "text": " think",
+    "startMs": 300,
+    "endMs": 780,
+    "timestampMs": 880,
+    "confidence": 0.986227
+  },
+  {
+    "text": " you",
+    "startMs": 780,
+    "endMs": 1220,
+    "timestampMs": 1440,
+    "confidence": 0.888091
+  },
+  {
+    "text": " run",
+    "startMs": 1220,
+    "endMs": 1360,
+    "timestampMs": 1720,
+    "confidence": 0.960946
+  },
+  {
+    "text": " this",
+    "startMs": 1360,
+    "endMs": 1750,
+    "timestampMs": 1960,
+    "confidence": 0.998452
+  },
+  {
+    "text": " house",
+    "startMs": 1750,
+    "endMs": 2280,
+    "timestampMs": 2260,
+    "confidence": 0.993163
+  },
+  {
+    "text": " you",
+    "startMs": 2280,
+    "endMs": 2760,
+    "timestampMs": 2980,
+    "confidence": 0.0794953
+  },
+  {
+    "text": " do",
+    "startMs": 2760,
+    "endMs": 2820,
+    "timestampMs": 3160,
+    "confidence": 0.98422
+  },
+  {
+    "text": " not",
+    "startMs": 2820,
+    "endMs": 3050,
+    "timestampMs": 3440,
+    "confidence": 0.982427
+  },
+  {
+    "text": " run",
+    "startMs": 3050,
+    "endMs": 3340,
+    "timestampMs": 3760,
+    "confidence": 0.996098
+  },
+  {
+    "text": " this",
+    "startMs": 3340,
+    "endMs": 3730,
+    "timestampMs": 3980,
+    "confidence": 0.996571
+  },
+  {
+    "text": " house",
+    "startMs": 3730,
+    "endMs": 4380,
+    "timestampMs": 4240,
+    "confidence": 0.977163
+  },
+  {
+    "text": " my",
+    "startMs": 4380,
+    "endMs": 5080,
+    "timestampMs": 4980,
+    "confidence": 0.405594
+  },
+  {
+    "text": " name",
+    "startMs": 5080,
+    "endMs": 5620,
+    "timestampMs": 5260,
+    "confidence": 0.981444
+  },
+  {
+    "text": " is",
+    "startMs": 5620,
+    "endMs": 5760,
+    "timestampMs": 5720,
+    "confidence": 0.987922
+  },
+  {
+    "text": " Rizz",
+    "startMs": 5760,
+    "endMs": 6080,
+    "timestampMs": 6060,
+    "confidence": 0.62388
+  },
+  {
+    "text": " I",
+    "startMs": 6080,
+    "endMs": 6720,
+    "timestampMs": 6740,
+    "confidence": 0.999445
+  },
+  {
+    "text": " decide",
+    "startMs": 6720,
+    "endMs": 7110,
+    "timestampMs": 6920,
+    "confidence": 0.921348
+  },
+  {
+    "text": " when",
+    "startMs": 7110,
+    "endMs": 7370,
+    "timestampMs": 7400,
+    "confidence": 0.995881
+  },
+  {
+    "text": " you",
+    "startMs": 7370,
+    "endMs": 7560,
+    "timestampMs": 7540,
+    "confidence": 0.999607
+  },
+  {
+    "text": " wake",
+    "startMs": 7560,
+    "endMs": 7820,
+    "timestampMs": 7700,
+    "confidence": 0.999216
+  },
+  {
+    "text": " up.",
+    "startMs": 7820,
+    "endMs": 8070,
+    "timestampMs": 8500,
+    "confidence": 0.999201
+  },
+  {
+    "text": " I",
+    "startMs": 8070,
+    "endMs": 8380,
+    "timestampMs": 8520,
+    "confidence": 0.996928
+  },
+  {
+    "text": " decide",
+    "startMs": 8380,
+    "endMs": 8670,
+    "timestampMs": 8700,
+    "confidence": 0.990994
+  },
+  {
+    "text": " which",
+    "startMs": 8670,
+    "endMs": 9030,
+    "timestampMs": 9140,
+    "confidence": 0.984125
+  },
+  {
+    "text": " chair",
+    "startMs": 9030,
+    "endMs": 9390,
+    "timestampMs": 9440,
+    "confidence": 0.989969
+  },
+  {
+    "text": " is",
+    "startMs": 9390,
+    "endMs": 9530,
+    "timestampMs": 9640,
+    "confidence": 0.997668
+  },
+  {
+    "text": " yours.",
+    "startMs": 9530,
+    "endMs": 10380,
+    "timestampMs": 10280,
+    "confidence": 0.999051
+  },
+  {
+    "text": " You",
+    "startMs": 10380,
+    "endMs": 10420,
+    "timestampMs": 10600,
+    "confidence": 0.988412
+  },
+  {
+    "text": " just",
+    "startMs": 10420,
+    "endMs": 10760,
+    "timestampMs": 11040,
+    "confidence": 0.984465
+  },
+  {
+    "text": " pay",
+    "startMs": 10760,
+    "endMs": 11010,
+    "timestampMs": 11260,
+    "confidence": 0.994473
+  },
+  {
+    "text": " the",
+    "startMs": 11010,
+    "endMs": 11260,
+    "timestampMs": 11400,
+    "confidence": 0.997914
+  },
+  {
+    "text": " rent.",
+    "startMs": 11260,
+    "endMs": 11720,
+    "timestampMs": 11940,
+    "confidence": 0.999682
+  },
+  {
+    "text": " You",
+    "startMs": 11720,
+    "endMs": 12050,
+    "timestampMs": 12180,
+    "confidence": 0.98017
+  },
+  {
+    "text": " never",
+    "startMs": 12050,
+    "endMs": 12270,
+    "timestampMs": 12440,
+    "confidence": 0.998374
+  },
+  {
+    "text": " ran",
+    "startMs": 12270,
+    "endMs": 12490,
+    "timestampMs": 12780,
+    "confidence": 0.991206
+  },
+  {
+    "text": " this",
+    "startMs": 12490,
+    "endMs": 12790,
+    "timestampMs": 12980,
+    "confidence": 0.996388
+  },
+  {
+    "text": " house",
+    "startMs": 12790,
+    "endMs": 13200,
+    "timestampMs": 13180,
+    "confidence": 0.983575
+  }
+]

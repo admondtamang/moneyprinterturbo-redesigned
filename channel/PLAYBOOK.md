@@ -387,3 +387,54 @@ burned-in text around 31s that it correctly did not flag, avoided via `trim_star
 Write the bit to what the footage ACTUALLY shows. The first Tofu draft said "the threat is a
 blanket" when the clip cuts to a rug and a feather toy — caught on preview, rewritten. A joke
 that does not match the picture is the "too basic" failure in a new costume.
+
+## 15. Project: dozer — heavy machinery (2026-10-05)
+
+Second channel. Registered in `projects.yaml`; data lives in `projects/dozer/`. The cat project
+stays at `channel/` — no migration. Every script takes `--project dozer` or `CC_PROJECT=dozer`.
+
+### What the research established (n=442 Shorts across 10 channels)
+| Finding | Evidence |
+|---|---|
+| Ceiling is enormous | `@JcbBackhoes` 3.18M subs, median **1.5M views/Short**, max 20.5M |
+| Most winners have NO speech | 12/20 top Shorts have zero auto-captions = music/ambient only |
+| **Nobody uses text captions** | 0 of 10 frame-checked top performers. Our format is an unoccupied lane |
+| **Cutting rate decides the tier** | 7M+ tier = 5-7 cuts/10s; every single-shot video capped at ~516k |
+| Hook = already mid-task at t=0 | all 10 verified; no establishing shot, no title card |
+| The mechanic is load transfer | material moves A->B with a visible completion state — a progress bar, not ASMR |
+| Titles are irrelevant here | top vs bottom quartile identical on every title feature; 20.5M winner is titled "2 JCB's Working Status" |
+| **Scale-reveal is a trap** | 0.87x multiplier, BELOW baseline. `@MegaMachinesChannel`: 1.92M subs, 0.02 views/sub |
+
+### Sub-niche vs what we can legally source
+- fails/recovery **1.54x** — best multiplier, but inherently candid third-party. CANNOT source.
+- precision/cab-POV **1.18x**, 1.1M tail — needs a real operator. CANNOT source.
+- work process **1.03x** — commodity, but owns the absolute ceiling (20.5M) AND is exactly what
+  Pexels stocks. **This is the lane we can feed.**
+
+### Footage supply — verified, not assumed
+Pexels: 2390 raw results -> **380 unique portrait machinery clips, 322 of them >=8s**, up to
+4K vertical, no attribution required. That is ~2 years of 3x/week posting before reuse.
+8 downloaded and ingested.
+CC-BY YouTube adds ~80-100 originals but all heavily brand-burned. `@purplewave` looked ideal
+(3000+ machinery videos) but its CC-BY tier is **640x360 SD** — unusable. Compilation accounts
+self-flagging CC (`gX8yvooDLPk`, 7.8M views) do not hold the rights; do not touch.
+
+### Pipeline change this forced: in-clip cutting
+`bit.py:build_montage()` assembles a video from `[clip, start, dur, zoom, focus]` segments.
+Single-shot is the sub-1M format; our cat pipeline was built that way.
+Stock gives ONE camera per job, so multi-angle is impossible — instead alternating **punch-in
+crops** give visual variety while preserving the single-task continuity that makes the progress
+bar legible. First build: 11.4s, **5 detected cuts = 4.4 cuts/10s**, inside the winners' band.
+
+### Format spec
+10-15s · open mid-task at t=0 · 4-6 segments, cut every ~1.8s, alternating wide / punch-in ·
+4 captions carrying PROGRESS not scene ("One truck / Six scoops / Four minutes / Done") ·
+drum bed, no narration · never the scale-reveal register.
+
+### Open
+- Channel handle unknown — `handle: null`, `pause: true`. No uploads until set.
+- Pixabay unquantified (no API key in config.toml; API 400, scrape 403). Pexels already clears
+  the bar so this is not blocking.
+- The agent self-flagged that its sub-niche split used a title-keyword regex while its own
+  section 6 showed titles are near-random in this niche. Treat the sub-niche multipliers as
+  directional, not measured.
